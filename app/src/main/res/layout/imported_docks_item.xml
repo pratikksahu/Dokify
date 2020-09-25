@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="docs"
+            type="com.pratiksahu.dokify.model.DocInfo" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="250sp"
+        android:layout_height="200sp">
+
+        <ImageView
+            android:id="@+id/importedImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.806"
+            app:srcCompat="@drawable/ic_launcher_background" />
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/importedImageSize"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:text="@{docs.imageSize}"-->
+        <!--            tools:layout_editor_absoluteX="125dp"-->
+        <!--            tools:layout_editor_absoluteY="181dp" />-->
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
