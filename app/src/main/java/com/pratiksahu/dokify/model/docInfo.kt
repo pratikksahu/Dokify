@@ -4,7 +4,7 @@ import android.net.Uri
 
 
 data class DocInfo(
-    val imageUri: Uri?,
-    val imageName: String?,
-    val imageSize: String?
+    val imageUri: Uri,
+    val imageName: String = " ",
+    val imageSize: String = " "
 )

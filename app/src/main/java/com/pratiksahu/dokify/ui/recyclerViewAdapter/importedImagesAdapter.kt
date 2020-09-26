@@ -1,7 +1,9 @@
 package com.pratiksahu.dokify.ui.recyclerViewAdapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.*
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -14,16 +16,34 @@ import kotlinx.android.synthetic.main.imported_docks_item.view.*
 
 class ImportedImagesAdapter(
     items: List<DocInfo>,
-    private val itemClick: (view: View, position: Int, dockItem: DocInfo?) -> Unit
+    private val itemClick: (view: View, position: Int, dockItem: DocInfo?) -> Unit,
+    private val itemCheckBoxClick: (dockItem: DocInfo?, position: Int, isChecked: Boolean) -> Unit,
+    private val itemLongClick: (view: View, position: Int, dockItem: DocInfo?) -> Unit
 ) :
     RecyclerView.Adapter<ImportedImagesAdapter.ViewHolder>() {
 
+    val TAG_SELECTED = "SELECTED_IMAGES"
+
     // refresh items
+    var isLongClicked = false
+    var selectedItems = ArrayList<Int>()
     var items = items
         set(value) {
             field = value
             notifyDataSetChanged()
         }
+
+    fun setIsLongClicked(bol: Boolean) {
+        isLongClicked = bol
+        notifyDataSetChanged()
+    }
+
+    @JvmName("setSelectedItems1")
+    fun setSelectedItems(selectedItemsList: ArrayList<Int>) {
+        selectedItems = selectedItemsList
+        Log.d(TAG_SELECTED, selectedItems.toString())
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
@@ -38,16 +58,23 @@ class ImportedImagesAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(position)
-        holder.itemView.setOnClickListener(holder)
-        if (items[position].imageUri != null) {
-            Glide.with(holder.itemView.context)
-                .applyDefaultRequestOptions(
-                    RequestOptions()
-                        .placeholder(R.drawable.ic_launcher_background)
-                )
-                .load(items[position].imageUri)
-                .into(holder.itemView.importedImage)
-        }
+        holder.itemView.importedImage.setOnClickListener(holder)
+        holder.itemView.importedImage.setOnLongClickListener(holder)
+        holder.itemView.singleItemCheckBox.setOnCheckedChangeListener(null)
+        holder.itemView.singleItemCheckBox.visibility = if (isLongClicked) VISIBLE else GONE
+        holder.itemView.singleItemCheckBox.isChecked = selectedItems.contains(position)
+        holder.itemView.singleItemCheckBox.setOnCheckedChangeListener(({ view, isChecked ->
+            itemCheckBoxClick.invoke(items[position], position, isChecked)
+        }))
+
+        Glide.with(holder.itemView.context)
+            .applyDefaultRequestOptions(
+                RequestOptions()
+                    .placeholder(R.drawable.ic_launcher_background)
+            )
+            .load(items[position].imageUri)
+            .centerCrop()
+            .into(holder.itemView.importedImage)
     }
 
     override fun getItemCount(): Int {
@@ -55,12 +82,21 @@ class ImportedImagesAdapter(
     }
 
     inner class ViewHolder(private val binding: ImportedDocksItemBinding) :
-        RecyclerView.ViewHolder(binding.root), View.OnClickListener {
+        RecyclerView.ViewHolder(binding.root), OnClickListener, OnLongClickListener {
+
         override fun onClick(v: View?) {
             v?.let {
-                itemClick.invoke(it, adapterPosition, items[adapterPosition])
+                itemClick.invoke(v, adapterPosition, items[adapterPosition])
             }
         }
+
+        override fun onLongClick(v: View?): Boolean {
+            v?.let {
+                itemLongClick.invoke(it, adapterPosition, items[adapterPosition])
+            }
+            return true
+        }
+
 
         fun bind(
             position: Int

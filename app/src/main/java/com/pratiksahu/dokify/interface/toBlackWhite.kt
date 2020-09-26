@@ -17,9 +17,10 @@ class ToBlackWhite {
     @RequiresApi(Build.VERSION_CODES.P)
     fun convertToBW(context: Context, colorUri: Uri): Bitmap? {
 
+//        val colorUriBitMap =
+//            ImageUtils.instant?.getCompressedBitmap("/storage/emulated/0/Android/data/com.pratiksahu.dokify/${colorUri.path}")
         val colorUriBitMap =
-            ImageUtils.instant?.getCompressedBitmap("/storage/emulated/0/Android/data/com.pratiksahu.dokify/${colorUri.path}")
-
+            ImageUtils.instant?.getCompressedBitmap(colorUri.path)
         //Transformation Matrix
         val redVal = 0.299f
         val greenVal = 0.587f

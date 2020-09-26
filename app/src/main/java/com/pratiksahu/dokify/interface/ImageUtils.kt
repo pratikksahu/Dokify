@@ -1,11 +1,12 @@
 import android.graphics.*
 import android.media.ExifInterface
+import android.util.Log
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 
 
 class ImageUtils {
-
+    val TAG_IMAGE_RESOLUTION = "IMAGE_RESOLUTION"
     fun getCompressedBitmap(imagePath: String?): Bitmap {
         val maxWidth = 7680.0f
         val maxHeight = 4320.0f
@@ -15,6 +16,7 @@ class ImageUtils {
         var bmp = BitmapFactory.decodeFile(imagePath, options)
         var actualHeight = options.outHeight
         var actualWidth = options.outWidth
+        Log.d(TAG_IMAGE_RESOLUTION, "WIDTH : $actualWidth , HEIGHT : $actualHeight ")
         var imgRatio = actualWidth.toFloat() / actualHeight.toFloat()
         val maxRatio = maxWidth / maxHeight
         if (actualHeight > maxHeight || actualWidth > maxWidth) {

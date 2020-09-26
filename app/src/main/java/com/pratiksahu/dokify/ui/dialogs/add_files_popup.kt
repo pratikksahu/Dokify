@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +21,6 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.NavHostFragment
 import com.pratiksahu.dokify.R
-import com.pratiksahu.dokify.model.DocInfo
 import com.pratiksahu.dokify.ui.viewPagerHome.imagePager.ImagePagerViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.add_files_popup_fragment.*
@@ -31,18 +31,19 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @RequiresApi(Build.VERSION_CODES.P)
 @AndroidEntryPoint
 class add_files_popup : DialogFragment() {
 
+    private val TAG_IMPORT_GALLERY = "GALLERY_IMPORT"
+    private val TAG_IMPORT_CAMERA = "CAMERA_IMPORT"
+    private val TAG_PERMISSION = "PERMISSION_RESULT"
 
     @Inject
     lateinit var imagePagerViewModel: ImagePagerViewModel
     lateinit var currentPhotoPath: String
     lateinit var photoURI: Uri
-    private val res = ArrayList<DocInfo>()
     private var flag = 0
     private val navController by lazy { NavHostFragment.findNavController(this) }
 
@@ -60,12 +61,14 @@ class add_files_popup : DialogFragment() {
                 ) == true
             ) {
                 ToastMessage("Permission Granted")
+                Log.d(TAG_PERMISSION, "Permission Granted")
                 if (flag == 1)
                     openCamera()
                 if (flag == 0)
                     openGallery()
             } else {
                 ToastMessage("Permission Denied")
+                Log.d(TAG_PERMISSION, "Permission Denied")
             }
         }
 
@@ -73,6 +76,7 @@ class add_files_popup : DialogFragment() {
     private val galleryActivityRegister =
         registerForActivityResult(ActivityResultContracts.GetMultipleContents()) {
             it?.also {
+                Log.d(TAG_IMPORT_GALLERY, "Number of items : ${it.size}")
                 it.forEach { obj ->
                     createFile()
                     val bitMap = ImageDecoder.decodeBitmap(
@@ -89,11 +93,8 @@ class add_files_popup : DialogFragment() {
                     opstream.write(btopstream.toByteArray())
                     opstream.flush()
                     opstream.close()
-                    val sizeStream =
-                        requireContext().contentResolver.openInputStream(obj)?.available()
-                    res.add(DocInfo(photoURI, null, sizeStream.toString()))
                 }
-                imagePagerViewModel.setImage(res)
+                imagePagerViewModel.initImages()
                 navController.popBackStack()
             }
         }
@@ -102,21 +103,20 @@ class add_files_popup : DialogFragment() {
         registerForActivityResult(ActivityResultContracts.TakePicture()) {
             if (it) {
                 ToastMessage("Got it")
+                Log.d(TAG_IMPORT_CAMERA, "Camera result: $it")
                 val sizeStream =
                     requireContext().contentResolver.openInputStream(photoURI)?.available()
-                imagePagerViewModel.setImage(
-                    arrayListOf(
-                        DocInfo(
-                            photoURI,
-                            null,
-                            sizeStream.toString()
-                        )
-                    )
-                )
-                navController.popBackStack()
+                imagePagerViewModel.initImages()
             } else {
-                File(currentPhotoPath).delete()
+                Log.d(TAG_IMPORT_CAMERA, "Camera result: $it")
+                File(currentPhotoPath).delete().let {
+                    Log.d(
+                        TAG_IMPORT_CAMERA,
+                        "Temp Photo Deleted <--- $it  Path <-- $currentPhotoPath"
+                    )
+                }
             }
+            navController.popBackStack()
         }
 
     override fun onCreateView(
@@ -202,7 +202,7 @@ class add_files_popup : DialogFragment() {
         photoFile?.also {
             photoURI = FileProvider.getUriForFile(
                 requireContext(),
-                "com.example.android.fileprovider",
+                "com.pratiksahu.android.fileprovider",
                 it
             )
         }
@@ -225,7 +225,6 @@ class add_files_popup : DialogFragment() {
 
 
     fun ToastMessage(msg: String) {
-        println("TESTING : ${msg}")
         Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
     }
 }

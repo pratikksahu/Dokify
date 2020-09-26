@@ -75,12 +75,11 @@ class crop_or_convert_dialog : DialogFragment() {
         cropImage.setOnClickListener {
             createFile()
             startCropActivity()
-//            navController.popBackStack()
         }
         convertImage.setOnClickListener {
             createFile()
-            val listOfColorAndBW = arrayListOf(grayScaledUri(selectedImage.imageUri!!))
-            imagePagerViewModel.setImage(listOfColorAndBW)
+            grayScaledUri(selectedImage.imageUri)
+            imagePagerViewModel.initImages()
             navController.popBackStack()
         }
     }
@@ -89,17 +88,15 @@ class crop_or_convert_dialog : DialogFragment() {
         imagePagerViewModel.selectedImage.observe(this, Observer {
             selectedImage = it
         })
-        imagePagerViewModel.getLiveData().observe(viewLifecycleOwner, Observer {
+        imagePagerViewModel.imagesInFolder.observe(viewLifecycleOwner, Observer {
             imageList.addAll(it)
         })
     }
 
     private fun startCropActivity() {
-
         CropImage.activity(selectedImage.imageUri)
             .setGuidelines(CropImageView.Guidelines.ON)
             .start(requireContext(), this)
-
     }
 
     @SuppressLint("NewApi")
@@ -109,8 +106,6 @@ class crop_or_convert_dialog : DialogFragment() {
         val result = CropImage.getActivityResult(data)
         if (resultCode == Activity.RESULT_OK) {
             val resultUri: Uri = result.uri
-            val sizeStream =
-                requireContext().contentResolver.openInputStream(resultUri)?.available()
             val srcPath: String = resultUri.path.toString()
             val destPath = currentPhotoPath
 
@@ -119,12 +114,9 @@ class crop_or_convert_dialog : DialogFragment() {
             moveFiles(Paths.get(srcPath), Paths.get(destPath))
             //Delete the cached image if successfully copied
             File(srcPath).delete()
-            val croppedImage = DocInfo(photoUri, null, sizeStream.toString())
-
-            val listOfColorAndBW = arrayListOf(croppedImage)
 
             //Updating ViewModel
-            imagePagerViewModel.setImage(listOfColorAndBW)
+            imagePagerViewModel.initImages()
 
         } else {
             File(currentPhotoPath).delete()
@@ -144,7 +136,7 @@ class crop_or_convert_dialog : DialogFragment() {
     }
 
     @RequiresApi(Build.VERSION_CODES.P)
-    fun grayScaledUri(color: Uri): DocInfo {
+    fun grayScaledUri(color: Uri) {
         //getting bitmap
         val result = converter.convertToBW(requireContext(), color)
         //creating outputStream to store grayscaled version
@@ -156,10 +148,6 @@ class crop_or_convert_dialog : DialogFragment() {
         opstream.write(btopstream.toByteArray())
         opstream.flush()
         opstream.close()
-        val sizeStream =
-            requireContext().contentResolver.openInputStream(photoUri)?.available()
-        val croppedImage = DocInfo(photoUri, null, sizeStream.toString())
-        return croppedImage
     }
 
 
@@ -175,7 +163,7 @@ class crop_or_convert_dialog : DialogFragment() {
         photoFile?.also {
             photoUri = FileProvider.getUriForFile(
                 requireContext(),
-                "com.example.android.fileprovider",
+                "com.pratiksahu.android.fileprovider",
                 it
             )
         }
@@ -197,7 +185,6 @@ class crop_or_convert_dialog : DialogFragment() {
     }
 
     fun ToastMessage(msg: String) {
-        println("Testing ${msg}")
         Toast.makeText(requireContext(), "Testing : ${msg}", Toast.LENGTH_SHORT).show()
     }
 }
