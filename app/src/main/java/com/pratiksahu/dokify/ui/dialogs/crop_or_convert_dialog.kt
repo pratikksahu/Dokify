@@ -1,7 +1,7 @@
 package com.pratiksahu.dokify.ui.dialogs
 
 import android.annotation.SuppressLint
-import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -70,7 +70,7 @@ class crop_or_convert_dialog : DialogFragment() {
         initListeners()
     }
 
-    @RequiresApi(Build.VERSION_CODES.P)
+
     private fun initListeners() {
         cropImage.setOnClickListener {
             createFile()
@@ -99,12 +99,13 @@ class crop_or_convert_dialog : DialogFragment() {
             .start(requireContext(), this)
     }
 
+
     @SuppressLint("NewApi")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
         val result = CropImage.getActivityResult(data)
-        if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == RESULT_OK) {
             val resultUri: Uri = result.uri
             val srcPath: String = resultUri.path.toString()
             val destPath = currentPhotoPath
@@ -135,7 +136,7 @@ class crop_or_convert_dialog : DialogFragment() {
         return false
     }
 
-    @RequiresApi(Build.VERSION_CODES.P)
+
     fun grayScaledUri(color: Uri) {
         //getting bitmap
         val result = converter.convertToBW(requireContext(), color)

@@ -16,12 +16,16 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.pratiksahu.dokify.R
 import com.pratiksahu.dokify.databinding.CommonViewPagerBinding
 import com.pratiksahu.dokify.model.DocInfo
 import com.pratiksahu.dokify.ui.recyclerViewAdapter.ImportedImagesAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.common_view_pager.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
 
@@ -46,6 +50,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
     //Adapter
     private var importedImagesAdapter: ImportedImagesAdapter? = null
 
+    lateinit var progressCircle: CircularProgressDrawable
 
     var flagForSelection = 0
 
@@ -62,9 +67,13 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val transition = Fade()
-        transition.duration = 400
+        transition.duration = 10000
         transition.addTarget(R.id.actionsTab)
         TransitionManager.beginDelayedTransition(binding.actionsTab, transition)
+        progressCircle = CircularProgressDrawable(requireContext())
+        progressCircle.strokeWidth = 5f
+        progressCircle.centerRadius = 30f
+        progressCircle.start()
         actionsTab.visibility = GONE
         setupSelectAllCheckBoxListener()
         setupCancelButtonListener()
@@ -84,61 +93,77 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
             importedImagesAdapter?.items = imageList
         }
         )
+
+        imagePagerViewModel.loading.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                importedocks.visibility = GONE
+                loadingData.visibility = VISIBLE
+            } else {
+                loadingData.visibility = GONE
+                importedocks.visibility = VISIBLE
+            }
+        })
     }
 
     fun initDocsAdapter() {
-        importedImagesAdapter = ImportedImagesAdapter(
-            imageList,
-            { view, pos, dockItem ->
 
-                //IMAGE CLICKED OR NOT
-                if (flagForSelection == 0) {
-                    if (dockItem != null) {
-                        imagePagerViewModel.setSelectedImage(dockItem)
-                        navController.navigate(R.id.action_landingPage_to_crop_or_convert_dialog)
-                    }
-                }
-                //IMAGE CLICKED FOR CHECKBOX ACTION OR NOT
-                if (flagForSelection == 1) {
-                    if (!selectedItems.contains(pos)) {
-                        selectedItems.add(pos)
-                        if (!selectedItemsImage.contains(dockItem!!.imageUri)) {
-                            selectedItemsImage.add(dockItem.imageUri)
+        CoroutineScope(Main).launch {
+            importedImagesAdapter = ImportedImagesAdapter(
+                imageList,
+                progressCircle,
+                { view, pos, dockItem ->
+
+                    //IMAGE CLICKED OR NOT
+                    if (flagForSelection == 0) {
+                        if (dockItem != null) {
+                            imagePagerViewModel.setSelectedImage(dockItem)
+                            navController.navigate(R.id.action_landingPage_to_crop_or_convert_dialog)
                         }
+                    }
+                    //IMAGE CLICKED FOR CHECKBOX ACTION OR NOT
+                    if (flagForSelection == 1) {
+                        if (!selectedItems.contains(pos)) {
+                            selectedItems.add(pos)
+                            if (!selectedItemsImage.contains(dockItem!!.imageUri)) {
+                                selectedItemsImage.add(dockItem.imageUri)
+                            }
+                        } else {
+                            if (selectedItems.contains(pos))
+                                selectedItems.remove(pos)
+                            if (selectedItemsImage.contains(dockItem!!.imageUri))
+                                selectedItemsImage.remove(dockItem.imageUri)
+                        }
+                        importedImagesAdapter?.setSelectedItems(selectedItems)
+                    }
+                },
+                { item, pos, isChecked ->
+                    //CHECKBOX CHECKED OR NOT
+                    if (isChecked) {
+                        selectedItems.add(pos)
+                        selectedItemsImage.add(item!!.imageUri)
                     } else {
+                        if (selectAllCheckBox.isChecked)
+                            selectAllCheckBox.isChecked = false
                         if (selectedItems.contains(pos))
                             selectedItems.remove(pos)
-                        if (selectedItemsImage.contains(dockItem!!.imageUri))
-                            selectedItemsImage.remove(dockItem.imageUri)
+                        if (selectedItemsImage.contains(item!!.imageUri))
+                            selectedItemsImage.remove(item.imageUri)
                     }
                     importedImagesAdapter?.setSelectedItems(selectedItems)
                 }
-            },
-            { item, pos, isChecked ->
-                //CHECKBOX CHECKED OR NOT
-                if (isChecked) {
-                    selectedItems.add(pos)
-                    selectedItemsImage.add(item!!.imageUri)
-                } else {
-                    if (selectedItems.contains(pos))
-                        selectedItems.remove(pos)
-                    if (selectedItemsImage.contains(item!!.imageUri))
-                        selectedItemsImage.remove(item.imageUri)
-                }
-                importedImagesAdapter?.setSelectedItems(selectedItems)
+            ) { view, pos, dockItem ->
+
+                //LONG PRESS
+                actionsTab.visibility = VISIBLE
+                flagForSelection = 1
+                importedImagesAdapter?.setIsLongClicked(true)
+
             }
-        ) { view, pos, dockItem ->
-
-            //LONG PRESS
-            actionsTab.visibility = VISIBLE
-            flagForSelection = 1
-            importedImagesAdapter?.setIsLongClicked(true)
-
-        }
-        importedocks.apply {
-            layoutManager = GridLayoutManager(requireContext(), 2)
-            itemAnimator = DefaultItemAnimator()
-            adapter = importedImagesAdapter
+            importedocks.apply {
+                layoutManager = GridLayoutManager(requireContext(), 2)
+                itemAnimator = DefaultItemAnimator()
+                adapter = importedImagesAdapter
+            }
         }
 
     }
@@ -181,6 +206,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
         selectAllCheckBox.setOnCheckedChangeListener(null)
         selectAllCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
+                selectAllCheckBox.text = "Unselect All"
                 //Storing Uri
                 imageList.forEach {
                     selectedItemsImage.add(it.imageUri)
@@ -192,6 +218,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
                 }
                 importedImagesAdapter?.setSelectedItems(selectedItems)
             } else {
+                selectAllCheckBox.text = "Select All"
                 selectedItemsImage.clear()
                 selectedItems.clear()
                 importedImagesAdapter?.setSelectedItems(selectedItems)

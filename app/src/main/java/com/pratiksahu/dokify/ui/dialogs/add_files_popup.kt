@@ -24,6 +24,10 @@ import com.pratiksahu.dokify.R
 import com.pratiksahu.dokify.ui.viewPagerHome.imagePager.ImagePagerViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.add_files_popup_fragment.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -77,24 +81,34 @@ class add_files_popup : DialogFragment() {
         registerForActivityResult(ActivityResultContracts.GetMultipleContents()) {
             it?.also {
                 Log.d(TAG_IMPORT_GALLERY, "Number of items : ${it.size}")
-                it.forEach { obj ->
-                    createFile()
-                    val bitMap = ImageDecoder.decodeBitmap(
-                        ImageDecoder.createSource(
-                            requireContext().contentResolver,
-                            obj
+                CoroutineScope(IO).launch {
+                    CoroutineScope(Main).launch {
+                        Log.d(TAG_IMPORT_GALLERY, "Loading Image : true")
+                        imagePagerViewModel.isLoading(true)
+                    }
+                    it.forEach { obj ->
+                        createFile()
+                        val bitMap = ImageDecoder.decodeBitmap(
+                            ImageDecoder.createSource(
+                                requireContext().contentResolver,
+                                obj
+                            )
                         )
-                    )
-                    val opstream = FileOutputStream(currentPhotoPath)
+                        val opstream = FileOutputStream(currentPhotoPath)
 
-                    //creating byteoutputstream
-                    val btopstream = ByteArrayOutputStream(1024)
-                    bitMap.compress(Bitmap.CompressFormat.JPEG, 100, btopstream)
-                    opstream.write(btopstream.toByteArray())
-                    opstream.flush()
-                    opstream.close()
+                        //creating byteoutputstream
+                        val btopstream = ByteArrayOutputStream(2048)
+                        bitMap.compress(Bitmap.CompressFormat.JPEG, 100, btopstream)
+                        opstream.write(btopstream.toByteArray())
+                        opstream.flush()
+                        opstream.close()
+                    }
+                    imagePagerViewModel.initImages()
+                    CoroutineScope(Main).launch {
+                        Log.d(TAG_IMPORT_GALLERY, "Loading Image : false")
+                        imagePagerViewModel.isLoading(false)
+                    }
                 }
-                imagePagerViewModel.initImages()
                 navController.popBackStack()
             }
         }

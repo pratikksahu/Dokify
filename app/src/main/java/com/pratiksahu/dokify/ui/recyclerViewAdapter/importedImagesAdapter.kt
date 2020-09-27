@@ -7,6 +7,7 @@ import android.view.View.*
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.pratiksahu.dokify.R
@@ -16,6 +17,7 @@ import kotlinx.android.synthetic.main.imported_docks_item.view.*
 
 class ImportedImagesAdapter(
     items: List<DocInfo>,
+    val progressCircle: CircularProgressDrawable,
     private val itemClick: (view: View, position: Int, dockItem: DocInfo?) -> Unit,
     private val itemCheckBoxClick: (dockItem: DocInfo?, position: Int, isChecked: Boolean) -> Unit,
     private val itemLongClick: (view: View, position: Int, dockItem: DocInfo?) -> Unit
@@ -70,7 +72,7 @@ class ImportedImagesAdapter(
         Glide.with(holder.itemView.context)
             .applyDefaultRequestOptions(
                 RequestOptions()
-                    .placeholder(R.drawable.ic_launcher_background)
+                    .placeholder(progressCircle)
             )
             .load(items[position].imageUri)
             .centerCrop()

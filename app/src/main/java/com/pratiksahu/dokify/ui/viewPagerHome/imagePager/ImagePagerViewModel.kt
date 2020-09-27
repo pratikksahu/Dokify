@@ -7,6 +7,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.pratiksahu.dokify.model.DocInfo
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
 import java.io.File
 import java.util.*
 import kotlin.Comparator
@@ -32,24 +36,36 @@ class ImagePagerViewModel @ViewModelInject constructor() : ViewModel(), Lifecycl
         _selectedImage.value = obj
     }
 
+    fun isLoading(value: Boolean) {
+        _loading.value = value
+    }
+
     fun initImages() {
-        _loading.value = true
-        val path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/Pictures"
-        val directory = File(path)
-        if (directory.exists()) {
-            val files: Array<File> = directory.listFiles()
-            if (files.size > 0) {
-                Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed())
-                val tempDocInfoList = ArrayList<DocInfo>()
-                for (i in files.indices) {
-                    val tempDocInfo =
-                        DocInfo(files[i].toUri(), files[i].name, files[i].length().toString())
-                    tempDocInfoList.add(tempDocInfo)
+        CoroutineScope(IO).launch {
+            CoroutineScope(Main).launch {
+                _loading.value = true
+            }
+            val path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/Pictures"
+            val directory = File(path)
+            if (directory.exists()) {
+                val files: Array<File> = directory.listFiles()
+                if (files.size > 0) {
+                    Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed())
+                    val tempDocInfoList = ArrayList<DocInfo>()
+                    for (i in files.indices) {
+                        val tempDocInfo =
+                            DocInfo(files[i].toUri(), files[i].name, files[i].length().toString())
+                        tempDocInfoList.add(tempDocInfo)
+                    }
+                    CoroutineScope(Main).launch {
+                        setImage(tempDocInfoList)
+                    }
                 }
-                setImage(tempDocInfoList)
+            }
+            CoroutineScope(Main).launch {
+                _loading.value = false
             }
         }
-        _loading.value = false
     }
 
 }

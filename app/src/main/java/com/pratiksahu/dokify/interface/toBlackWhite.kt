@@ -4,21 +4,17 @@ import ImageUtils
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
-import android.os.Build
 import android.renderscript.Allocation
 import android.renderscript.Matrix4f
 import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicColorMatrix
-import androidx.annotation.RequiresApi
 
 
 class ToBlackWhite {
 
-    @RequiresApi(Build.VERSION_CODES.P)
+
     fun convertToBW(context: Context, colorUri: Uri): Bitmap? {
 
-//        val colorUriBitMap =
-//            ImageUtils.instant?.getCompressedBitmap("/storage/emulated/0/Android/data/com.pratiksahu.dokify/${colorUri.path}")
         val colorUriBitMap =
             ImageUtils.instant?.getCompressedBitmap(colorUri.path)
         //Transformation Matrix
