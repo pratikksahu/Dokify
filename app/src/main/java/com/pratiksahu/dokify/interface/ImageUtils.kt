@@ -1,15 +1,61 @@
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Matrix
 import android.media.ExifInterface
+import android.net.Uri
 import android.util.Log
+import com.itextpdf.io.image.ImageDataFactory
+import com.itextpdf.kernel.pdf.PdfDocument
+import com.itextpdf.kernel.pdf.PdfWriter
+import com.itextpdf.kernel.pdf.WriterProperties
+import com.itextpdf.layout.Document
+import com.itextpdf.layout.element.Image
 import java.io.ByteArrayOutputStream
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.io.IOException
 
 
 class ImageUtils {
     val TAG_IMAGE_RESOLUTION = "IMAGE_RESOLUTION"
+    fun createPdf(imageList: ArrayList<Uri>, filePath: String) {
+
+        // Creating a PdfDocument object
+        val pdfOut = FileOutputStream(filePath)
+        val writerProperties = WriterProperties().setFullCompressionMode(true)
+        writerProperties.useSmartMode()
+        val pdfWriter = PdfWriter(pdfOut, writerProperties)
+        val pdfDocument =
+            PdfDocument(pdfWriter)
+        val document = Document(pdfDocument)
+
+        imageList.forEach {
+
+            val imgIn = FileInputStream(it.path)
+            val byteOut = ByteArrayOutputStream()
+
+            val data = ByteArray(1024)
+            while (imgIn.read(data, 0, data.size) != -1) {
+                byteOut.write(data)
+            }
+            byteOut.flush()
+            imgIn.close()
+
+            //ImageData
+            val imgData = ImageDataFactory.create(byteOut.toByteArray())
+            byteOut.close()
+            val pdfImage = Image(imgData)
+
+            document.add(pdfImage)
+
+        }
+        document.close()
+    }
+
     fun getCompressedBitmap(imagePath: String?): Bitmap {
-        val maxWidth = 7680.0f
-        val maxHeight = 4320.0f
+        val maxWidth = 768.0f
+        val maxHeight = 480.0f
         var scaledBitmap: Bitmap? = null
         val options = BitmapFactory.Options()
         options.inJustDecodeBounds = true
@@ -58,7 +104,7 @@ class ImageUtils {
             bmp,
             middleX - bmp.width / 2,
             middleY - bmp.height / 2,
-            Paint(Paint.FILTER_BITMAP_FLAG)
+            null
         )
         var exif: ExifInterface? = null
         try {
@@ -110,6 +156,7 @@ class ImageUtils {
         }
         return inSampleSize
     }
+
 
     companion object {
         var mInstant: ImageUtils? = null

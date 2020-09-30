@@ -1,5 +1,6 @@
 package com.pratiksahu.dokify.ui.viewPagerHome.imagePager
 
+import android.net.Uri
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LifecycleObserver
@@ -27,6 +28,11 @@ class ImagePagerViewModel @ViewModelInject constructor() : ViewModel(), Lifecycl
     private val _loading = MutableLiveData<Boolean>()
     val loading: LiveData<Boolean> = _loading
 
+    private val _isEmpty = MutableLiveData<Boolean>()
+    val isEmpty: LiveData<Boolean> = _isEmpty
+
+    private val _imageToConvert = MutableLiveData<ArrayList<Uri>>()
+    val imageToConvert: LiveData<ArrayList<Uri>> = _imageToConvert
 
     fun setImage(img: ArrayList<DocInfo>) {
         _newImage.value = img
@@ -39,6 +45,11 @@ class ImagePagerViewModel @ViewModelInject constructor() : ViewModel(), Lifecycl
     fun isLoading(value: Boolean) {
         _loading.value = value
     }
+
+    fun setImagesToConvert(list: ArrayList<Uri>) {
+        _imageToConvert.value = list
+    }
+
 
     fun initImages() {
         CoroutineScope(IO).launch {
@@ -59,6 +70,11 @@ class ImagePagerViewModel @ViewModelInject constructor() : ViewModel(), Lifecycl
                     }
                     CoroutineScope(Main).launch {
                         setImage(tempDocInfoList)
+                        _isEmpty.value = false
+                    }
+                } else {
+                    CoroutineScope(Main).launch {
+                        _isEmpty.value = true
                     }
                 }
             }

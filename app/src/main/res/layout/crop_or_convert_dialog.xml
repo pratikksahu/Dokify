@@ -11,19 +11,19 @@
         android:layout_height="wrap_content"
         tools:context=".ui.dialogs.crop_or_convert_dialog">
 
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
-            android:layout_width="200sp"
-            android:layout_height="100sp"
+            android:layout_width="250sp"
+            android:layout_height="120sp"
+            android:background="@drawable/popup_background"
             tools:context=".ui.dialogs.crop_or_convert_dialog">
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/cropImage"
                 android:layout_width="80sp"
                 android:layout_height="80sp"
                 android:layout_marginEnd="12dp"
-                android:src="@android:drawable/ic_menu_crop"
+                android:src="@drawable/ic_button_crop"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -36,12 +36,12 @@
                 app:layout_constraintStart_toEndOf="@+id/convertImage"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/convertImage"
                 android:layout_width="80sp"
                 android:layout_height="80sp"
                 android:layout_marginStart="16dp"
-                android:src="@android:drawable/ic_menu_set_as"
+                android:src="@drawable/ic_button_contrast"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

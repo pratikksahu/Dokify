@@ -97,8 +97,8 @@ class add_files_popup : DialogFragment() {
                         val opstream = FileOutputStream(currentPhotoPath)
 
                         //creating byteoutputstream
-                        val btopstream = ByteArrayOutputStream(2048)
-                        bitMap.compress(Bitmap.CompressFormat.JPEG, 100, btopstream)
+                        val btopstream = ByteArrayOutputStream(1024)
+                        bitMap.compress(Bitmap.CompressFormat.JPEG, 20, btopstream)
                         opstream.write(btopstream.toByteArray())
                         opstream.flush()
                         opstream.close()

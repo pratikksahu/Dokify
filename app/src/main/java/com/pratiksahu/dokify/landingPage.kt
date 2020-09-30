@@ -34,7 +34,6 @@ class landingPage : Fragment(R.layout.landing_page_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         AddFilesButtonSetup()
-
         initViewPager()
     }
 
@@ -52,16 +51,15 @@ class landingPage : Fragment(R.layout.landing_page_fragment) {
         )
         binding.recentWithHistory.adapter = recentAndHistoryAdapter
 
-        binding.recentWithHistory.isUserInputEnabled = true
 
         TabLayoutMediator(TabLayoutRecentHistory, recentWithHistory) { tab, position ->
             recentWithHistory.setCurrentItem(tab.position, true)
             when (position) {
                 0 -> {
-                    tab.text = "Images"
+                    tab.text = "Image To PDF"
                 }
                 1 -> {
-                    tab.text = "PDF"
+                    tab.text = "Recent PDF's"
                 }
             }
         }.attach()

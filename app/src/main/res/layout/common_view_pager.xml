@@ -31,9 +31,9 @@
 
 
             <ImageView
-                android:id="@+id/pdfButton"
-                android:layout_width="45sp"
-                android:layout_height="45sp"
+                android:id="@+id/pdfDialog"
+                android:layout_width="40sp"
+                android:layout_height="40sp"
                 android:layout_marginStart="45sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/deleteFileButton"
@@ -42,8 +42,8 @@
 
             <ImageView
                 android:id="@+id/deleteFileButton"
-                android:layout_width="45sp"
-                android:layout_height="45sp"
+                android:layout_width="40sp"
+                android:layout_height="40sp"
                 android:layout_marginStart="45sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/selectAllCheckBox"
@@ -54,13 +54,22 @@
                 android:id="@+id/cancelSelectionButton"
                 android:layout_width="40sp"
                 android:layout_height="40sp"
-                android:layout_marginStart="45sp"
+                android:layout_marginStart="44dp"
                 android:hapticFeedbackEnabled="true"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/pdfButton"
+                app:layout_constraintStart_toEndOf="@+id/pdfDialog"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_button_close"
-                tools:layout_editor_absoluteX="275dp" />
+                app:srcCompat="@drawable/ic_button_close" />
+
+            <TextView
+                android:id="@+id/guideText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

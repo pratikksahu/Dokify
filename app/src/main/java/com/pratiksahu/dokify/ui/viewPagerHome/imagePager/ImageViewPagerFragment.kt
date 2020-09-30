@@ -2,8 +2,6 @@ package com.pratiksahu.dokify.ui.viewPagerHome.imagePager
 
 import android.net.Uri
 import android.os.Bundle
-import android.transition.Fade
-import android.transition.TransitionManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -52,6 +50,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
 
     lateinit var progressCircle: CircularProgressDrawable
 
+
     var flagForSelection = 0
 
     override fun onCreateView(
@@ -66,15 +65,15 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val transition = Fade()
-        transition.duration = 10000
-        transition.addTarget(R.id.actionsTab)
-        TransitionManager.beginDelayedTransition(binding.actionsTab, transition)
+
         progressCircle = CircularProgressDrawable(requireContext())
         progressCircle.strokeWidth = 5f
         progressCircle.centerRadius = 30f
         progressCircle.start()
-        actionsTab.visibility = GONE
+
+
+        hideActionsTabView()
+        pdfButtonListener()
         setupSelectAllCheckBoxListener()
         setupCancelButtonListener()
         setupDeleteImageButtonListener()
@@ -84,17 +83,6 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
     fun setObservables() {
         imagePagerViewModel.loading.observe(viewLifecycleOwner, Observer {
             Log.d(TAG_IMAGE_LIST, "LOADING IMAGES STATUS :" + it.toString())
-        })
-        imagePagerViewModel.initImages()
-        imagePagerViewModel.imagesInFolder.observe(viewLifecycleOwner, Observer {
-            imageList.clear()
-            imageList.addAll(it)
-            Log.d(TAG_IMAGE_LIST, imageList.toString())
-            importedImagesAdapter?.items = imageList
-        }
-        )
-
-        imagePagerViewModel.loading.observe(viewLifecycleOwner, Observer {
             if (it) {
                 importedocks.visibility = GONE
                 loadingData.visibility = VISIBLE
@@ -103,6 +91,23 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
                 importedocks.visibility = VISIBLE
             }
         })
+
+        imagePagerViewModel.initImages()
+
+        imagePagerViewModel.isEmpty.observe(viewLifecycleOwner, Observer { emptyFolder ->
+            if (emptyFolder)
+                guideText.text = getString(R.string.emptyFolderMessage)
+            else
+                guideText.text = getString(R.string.notEmptyFolderMessage)
+        })
+        imagePagerViewModel.imagesInFolder.observe(viewLifecycleOwner, Observer {
+            imageList.clear()
+            imageList.addAll(it)
+            Log.d(TAG_IMAGE_LIST, imageList.toString())
+            importedImagesAdapter?.items = imageList
+        }
+        )
+
     }
 
     fun initDocsAdapter() {
@@ -154,7 +159,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
             ) { view, pos, dockItem ->
 
                 //LONG PRESS
-                actionsTab.visibility = VISIBLE
+                showActionsTabView()
                 flagForSelection = 1
                 importedImagesAdapter?.setIsLongClicked(true)
 
@@ -168,6 +173,14 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
 
     }
 
+    fun pdfButtonListener() {
+        pdfDialog.setOnClickListener {
+            imagePagerViewModel.setImagesToConvert(selectedItemsImage)
+            navController.navigate(R.id.action_landingPage_to_convert_to_pdf_dialog)
+        }
+    }
+
+
     fun setupDeleteImageButtonListener() {
         deleteFileButton.setOnClickListener {
             if (selectedItemsImage.size > 0)
@@ -178,7 +191,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
                         }
                 }
             flagForSelection = 0
-            actionsTab.visibility = GONE
+            hideActionsTabView()
             selectAllCheckBox.isChecked = false
             selectedItemsImage.clear()
             selectedItems.clear()
@@ -196,8 +209,9 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
             flagForSelection = 0
             importedImagesAdapter?.setIsLongClicked(false)
             selectedItems.clear()
+            selectedItemsImage.clear()
             importedImagesAdapter?.setSelectedItems(selectedItems)
-            actionsTab.visibility = GONE
+            hideActionsTabView()
             selectAllCheckBox.isChecked = false
         }
     }
@@ -226,6 +240,31 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
         }
         selectAllCheckBox.isChecked = false
     }
+
+    fun hideActionsTabView() {
+        //Hide buttons
+        selectAllCheckBox.visibility = GONE
+        deleteFileButton.visibility = GONE
+        pdfDialog.visibility = GONE
+        cancelSelectionButton.visibility = GONE
+
+        //Show guide text
+        guideText.visibility = VISIBLE
+
+    }
+
+    fun showActionsTabView() {
+        //Hide buttons
+        selectAllCheckBox.visibility = VISIBLE
+        deleteFileButton.visibility = VISIBLE
+        pdfDialog.visibility = VISIBLE
+        cancelSelectionButton.visibility = VISIBLE
+
+        //Show guide text
+        guideText.visibility = GONE
+
+    }
+
 
     fun ToastMessage(msg: String) {
         Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()

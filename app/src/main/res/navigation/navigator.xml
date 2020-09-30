@@ -15,6 +15,9 @@
         <action
             android:id="@+id/action_landingPage_to_crop_or_convert_dialog"
             app:destination="@id/crop_or_convert_dialog" />
+        <action
+            android:id="@+id/action_landingPage_to_convert_to_pdf_dialog"
+            app:destination="@id/convert_to_pdf_dialog" />
     </fragment>
     <dialog
         android:id="@+id/add_files_popup"
@@ -26,4 +29,8 @@
         android:name="com.pratiksahu.dokify.ui.dialogs.crop_or_convert_dialog"
         android:label="crop_or_convert_dialog"
         tools:layout="@layout/crop_or_convert_dialog" />
+    <dialog
+        android:id="@+id/convert_to_pdf_dialog"
+        android:name="com.pratiksahu.dokify.ui.dialogs.convert_to_pdf_dialog"
+        android:label="convert_to_pdf_dialog" />
 </navigation>
