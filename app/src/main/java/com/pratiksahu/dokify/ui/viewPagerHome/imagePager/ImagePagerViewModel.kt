@@ -32,11 +32,18 @@ class ImagePagerViewModel @ViewModelInject constructor() : ViewModel(), Lifecycl
     private val _isEmpty = MutableLiveData<Boolean>()
     val isEmpty: LiveData<Boolean> = _isEmpty
 
+    private val _isConverted = MutableLiveData<Boolean>()
+    val isConverted: LiveData<Boolean> = _isConverted
+
     private val _imageToConvert = MutableLiveData<ArrayList<Uri>>()
     val imageToConvert: LiveData<ArrayList<Uri>> = _imageToConvert
 
     private val _tempImageToConvert = MutableLiveData<ArrayList<Uri>>()
     val tempImageToConvert: LiveData<ArrayList<Uri>> = _tempImageToConvert
+
+    fun setIsConverted(value: Boolean) {
+        _isConverted.value = value
+    }
 
     fun setImage(img: ArrayList<DocInfo>) {
         _newImage.value = img

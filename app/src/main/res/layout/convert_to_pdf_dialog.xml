@@ -6,7 +6,7 @@
     <data></data>
 
     <FrameLayout
-        android:id="@+id/frameLayout"
+        android:id="@+id/dialog"
         android:layout_width="400sp"
         android:layout_height="250sp"
         android:tag="layout/convert_to_pdf_dialog"

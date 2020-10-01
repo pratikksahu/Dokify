@@ -2,7 +2,6 @@ package com.pratiksahu.dokify.ui.dialogs
 
 import ImageUtils
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -24,9 +23,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
-import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -68,6 +65,7 @@ class convert_to_pdf_dialog : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        dialog?.setCanceledOnTouchOutside(false)
         makePDF.text = "Create PDF"
         fileNameTextBox.hint = timeStamp
         setupObservers()
@@ -97,18 +95,9 @@ class convert_to_pdf_dialog : DialogFragment() {
         makePDF.setOnClickListener {
             val notify = CoroutineScope(Main).launch {
                 makePDF.text = "Please Wait"
+                imagePagerViewModel.setIsConverted(false)
             }
             notify.invokeOnCompletion {
-                val task = CoroutineScope(IO).launch()
-                {
-                    if (toConvert) {
-                        for (i in imagesToConvert.indices) {
-                            createTempFile("_${i}", "TEMP", ".jpg")
-                            blackAndWhite(imagesToConvert[i])
-                        }
-                    }
-                }
-                task.invokeOnCompletion {
                     imagePagerViewModel.initTempImages()
 
                     //Invoke create pdf file method
@@ -119,22 +108,21 @@ class convert_to_pdf_dialog : DialogFragment() {
                     }
 
                     //Launch pdf creation method
-                    CoroutineScope(IO).launch {
-                        if (toConvert) {
-                            ImageUtils.instant?.createPdf(tempImagesToConvert, currentPhotoPath)
-                                .let {
-                                    pdfCreated(it!!)
-                                }
-                            CoroutineScope(Main).launch {
-                                tempImagesToConvert.forEach {
-                                    File(it.path).delete()
-                                }
-                            }
-                        } else {
-                            ImageUtils.instant?.createPdf(imagesToConvert, currentPhotoPath).let {
+                val convertTask = CoroutineScope(IO).launch {
+                    if (toConvert) {
+                        ImageUtils.instant?.createPdf(tempImagesToConvert, currentPhotoPath)
+                            .let {
                                 pdfCreated(it!!)
                             }
+                    } else {
+                        ImageUtils.instant?.createPdf(imagesToConvert, currentPhotoPath).let {
+                            pdfCreated(it!!)
                         }
+                    }
+                }
+                convertTask.invokeOnCompletion {
+                    CoroutineScope(Main).launch {
+                        navController.popBackStack()
                     }
                 }
             }
@@ -152,7 +140,7 @@ class convert_to_pdf_dialog : DialogFragment() {
                 ToastMessage("$name failed to create , Try again")
             }
             pdfViewPagerFragmentViewModel.initPdf()
-            navController.popBackStack()
+            imagePagerViewModel.setIsConverted(true)
         }
     }
 
@@ -170,33 +158,6 @@ class convert_to_pdf_dialog : DialogFragment() {
                 File(currentPhotoPath)
             )
         }
-    }
-
-    fun createTempFile(fileName: String, prefix: String, suffix: String) {
-        val name = prefix + fileName + suffix
-        File("/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/TMP/$name").apply {
-            currentPhotoPath = absolutePath
-        }.createNewFile().also {
-            photoURI = FileProvider.getUriForFile(
-                requireContext(),
-                "com.pratiksahu.android.fileprovider",
-                File(currentPhotoPath)
-            )
-        }
-    }
-
-    fun blackAndWhite(uri: Uri) {
-        //getting bitmap
-        val result = toBlackWhite.convertToBW(requireContext(), uri)
-        //creating outputStream to store grayscaled version
-        val opstream = FileOutputStream(currentPhotoPath)
-
-        //creating byteoutputstream
-        val btopstream = ByteArrayOutputStream(1024)
-        result?.compress(Bitmap.CompressFormat.JPEG, 80, btopstream)
-        opstream.write(btopstream.toByteArray())
-        opstream.flush()
-        opstream.close()
     }
 
 

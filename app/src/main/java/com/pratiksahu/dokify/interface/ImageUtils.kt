@@ -21,7 +21,7 @@ class ImageUtils {
     val TAG_IMAGE_RESOLUTION = "IMAGE_RESOLUTION"
     fun createPdf(imageList: ArrayList<Uri>, filePath: String): Boolean {
 
-        println("TESTING ${imageList}")
+        val list = imageList
         // Creating a PdfDocument object
         val pdfOut = FileOutputStream(filePath)
         val writerProperties = WriterProperties().setFullCompressionMode(true)
@@ -31,7 +31,8 @@ class ImageUtils {
             PdfDocument(pdfWriter)
         val document = Document(pdfDocument)
         try {
-            imageList.forEach {
+            for (it in list) {
+
                 val imgIn = FileInputStream(it.path)
                 val byteOut = ByteArrayOutputStream()
 
@@ -48,7 +49,6 @@ class ImageUtils {
                 val pdfImage = Image(imgData)
 
                 document.add(pdfImage)
-
             }
         } catch (e: IOException) {
             e.printStackTrace()
