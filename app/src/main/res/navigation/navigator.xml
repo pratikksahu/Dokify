@@ -32,5 +32,6 @@
     <dialog
         android:id="@+id/convert_to_pdf_dialog"
         android:name="com.pratiksahu.dokify.ui.dialogs.convert_to_pdf_dialog"
-        android:label="convert_to_pdf_dialog" />
+        android:label="convert_to_pdf_dialog"
+        tools:layout="@layout/convert_to_pdf_dialog" />
 </navigation>

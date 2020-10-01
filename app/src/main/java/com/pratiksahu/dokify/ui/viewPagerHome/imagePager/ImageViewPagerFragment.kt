@@ -51,7 +51,6 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
 
     lateinit var progressCircle: CircularProgressDrawable
 
-
     var flagForSelection = 0
 
     override fun onCreateView(
@@ -249,6 +248,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
         selectAllCheckBox.visibility = GONE
         deleteFileButton.visibility = GONE
         pdfDialog.visibility = GONE
+        shareMultiple.visibility = GONE
         cancelSelectionButton.visibility = GONE
 
         //Show guide text
@@ -261,6 +261,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
         selectAllCheckBox.visibility = VISIBLE
         deleteFileButton.visibility = VISIBLE
         pdfDialog.visibility = VISIBLE
+        shareMultiple.visibility = GONE
         cancelSelectionButton.visibility = VISIBLE
 
         //Hide guide text

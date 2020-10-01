@@ -41,6 +41,16 @@
                 app:srcCompat="@drawable/ic_button_pdf" />
 
             <ImageView
+                android:id="@+id/shareMultiple"
+                android:layout_width="40sp"
+                android:layout_height="40sp"
+                android:layout_marginStart="45sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/deleteFileButton"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_button_sharing" />
+
+            <ImageView
                 android:id="@+id/deleteFileButton"
                 android:layout_width="40sp"
                 android:layout_height="40sp"
@@ -54,10 +64,10 @@
                 android:id="@+id/cancelSelectionButton"
                 android:layout_width="40sp"
                 android:layout_height="40sp"
-                android:layout_marginStart="44dp"
+                android:layout_marginEnd="50dp"
                 android:hapticFeedbackEnabled="true"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/pdfDialog"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_button_close" />
 

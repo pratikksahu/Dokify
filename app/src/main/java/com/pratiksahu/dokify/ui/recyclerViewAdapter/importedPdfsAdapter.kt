@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.pratiksahu.dokify.R
 import com.pratiksahu.dokify.databinding.ImportedDocksPdfItemBinding
 import com.pratiksahu.dokify.model.DocInfo
@@ -15,7 +14,6 @@ import kotlinx.android.synthetic.main.imported_docks_pdf_item.view.*
 
 class ImportedPdfsAdapter(
     items: List<DocInfo>,
-    val progressCircle: CircularProgressDrawable,
     private val itemClick: (view: View, position: Int, dockItem: DocInfo?) -> Unit,
     private val itemCheckBoxClick: (dockItem: DocInfo?, position: Int, isChecked: Boolean) -> Unit,
     private val itemLongClick: (view: View, position: Int, dockItem: DocInfo?) -> Unit
@@ -61,9 +59,15 @@ class ImportedPdfsAdapter(
         holder.bind(position)
         holder.itemView.longPressArea.setOnClickListener(holder)
         holder.itemView.longPressArea.setOnLongClickListener(holder)
+        holder.itemView.shareButton.setOnClickListener(holder)
         holder.itemView.singleItemCheckBox.setOnCheckedChangeListener(null)
+
         holder.itemView.singleItemCheckBox.visibility =
             if (isLongClicked) View.VISIBLE else View.GONE
+
+        //Should not be visible when user is trying to delete pdf
+        holder.itemView.shareButton.visibility =
+            if (isLongClicked) View.GONE else View.VISIBLE
         holder.itemView.singleItemCheckBox.isChecked = selectedItems.contains(position)
         holder.itemView.singleItemCheckBox.setOnCheckedChangeListener(({ view, isChecked ->
             itemCheckBoxClick.invoke(items[position], position, isChecked)

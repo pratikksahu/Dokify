@@ -29,6 +29,12 @@ class PdfViewPagerFragmentViewModel @ViewModelInject constructor() : ViewModel()
     private val _pdfInFolder = MutableLiveData<ArrayList<DocInfo>>()
     val pdfInFolder: LiveData<ArrayList<DocInfo>> = _pdfInFolder
 
+    private val _pdfToOpen = MutableLiveData<DocInfo>()
+    val pdfToOpen: LiveData<DocInfo> = _pdfToOpen
+
+    fun setPdfToOpen(item: DocInfo) {
+        _pdfToOpen.value = item
+    }
 
     fun setPdf(list: ArrayList<DocInfo>) {
         _pdfInFolder.value = list

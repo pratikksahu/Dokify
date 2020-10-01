@@ -5,4 +5,6 @@
     <string name="pdfOutputPath">/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/PDF/</string>
     <string name="emptyFolderMessage">Add images to create PDF</string>
     <string name="notEmptyFolderMessage">Convert to pdf by holding image</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
