@@ -53,6 +53,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
 
     var flagForSelection = 0
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -66,6 +67,19 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        //Temporary directory
+        var path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/TMP"
+        var directory = File(path)
+        directory.mkdir()
+
+        //PDF directory
+        path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/PDF"
+        directory = File(path)
+        if (directory.exists())
+            directory.delete()
+        directory.mkdir()
+
         actionsTab.layoutTransition.setAnimateParentHierarchy(false)
         progressCircle = CircularProgressDrawable(requireContext())
         progressCircle.strokeWidth = 5f
@@ -85,14 +99,16 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
         imagePagerViewModel.loading.observe(viewLifecycleOwner, Observer {
             Log.d(TAG_IMAGE_LIST, "LOADING IMAGES STATUS :" + it.toString())
             if (it) {
+                actionsTab.visibility = GONE
                 importedocks.visibility = GONE
                 loadingData.visibility = VISIBLE
             } else {
+                actionsTab.visibility = VISIBLE
                 loadingData.visibility = GONE
                 importedocks.visibility = VISIBLE
             }
         })
-
+        imagePagerViewModel.initTempImages()
         imagePagerViewModel.initImages()
 
         imagePagerViewModel.isEmpty.observe(viewLifecycleOwner, Observer { emptyFolder ->

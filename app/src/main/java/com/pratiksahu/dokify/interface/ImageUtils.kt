@@ -21,6 +21,7 @@ class ImageUtils {
     val TAG_IMAGE_RESOLUTION = "IMAGE_RESOLUTION"
     fun createPdf(imageList: ArrayList<Uri>, filePath: String): Boolean {
 
+        println("TESTING ${imageList}")
         // Creating a PdfDocument object
         val pdfOut = FileOutputStream(filePath)
         val writerProperties = WriterProperties().setFullCompressionMode(true)
@@ -31,7 +32,6 @@ class ImageUtils {
         val document = Document(pdfDocument)
         try {
             imageList.forEach {
-
                 val imgIn = FileInputStream(it.path)
                 val byteOut = ByteArrayOutputStream()
 
@@ -59,8 +59,8 @@ class ImageUtils {
     }
 
     fun getCompressedBitmap(imagePath: String?): Bitmap {
-        val maxWidth = 768.0f
-        val maxHeight = 480.0f
+        val maxWidth = 1920.0f
+        val maxHeight = 1080.0f
         var scaledBitmap: Bitmap? = null
         val options = BitmapFactory.Options()
         options.inJustDecodeBounds = true

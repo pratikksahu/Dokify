@@ -2,6 +2,7 @@ package com.pratiksahu.dokify.ui.dialogs
 
 import ImageUtils
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,6 +14,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.NavHostFragment
+import com.pratiksahu.dokify.`interface`.ToBlackWhite
 import com.pratiksahu.dokify.databinding.ConvertToPdfDialogBinding
 import com.pratiksahu.dokify.ui.viewPagerHome.imagePager.ImagePagerViewModel
 import com.pratiksahu.dokify.ui.viewPagerHome.pdfPager.PdfViewPagerFragmentViewModel
@@ -22,7 +24,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -43,8 +47,10 @@ class convert_to_pdf_dialog : DialogFragment() {
 
     lateinit var currentPhotoPath: String
     lateinit var photoURI: Uri
+    private var toBlackWhite = ToBlackWhite()
 
     val imagesToConvert = ArrayList<Uri>()
+    val tempImagesToConvert = ArrayList<Uri>()
 
     val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
     var fileName = ""
@@ -69,8 +75,13 @@ class convert_to_pdf_dialog : DialogFragment() {
     }
 
     fun setupObservers() {
+
         imagePagerViewModel.imageToConvert.observe(viewLifecycleOwner, Observer {
             imagesToConvert.addAll(it)
+        })
+        imagePagerViewModel.tempImageToConvert.observe(viewLifecycleOwner, Observer {
+            tempImagesToConvert.clear()
+            tempImagesToConvert.addAll(it)
         })
     }
 
@@ -81,25 +92,55 @@ class convert_to_pdf_dialog : DialogFragment() {
 
         colorOrNot.setOnCheckedChangeListener { buttonView, isChecked ->
             toConvert = isChecked
-            if (isChecked)
-                buttonView.text = "Black And White PDF "
-            else
-                buttonView.text = "Color PDF "
         }
 
         makePDF.setOnClickListener {
-            if (!fileName.isEmpty() && !fileName.isBlank())
-                createFile(fileName, "", ".pdf")
-            else {
-                createFile(timeStamp, "PDF_", ".pdf")
+            val notify = CoroutineScope(Main).launch {
+                makePDF.text = "Please Wait"
             }
-            CoroutineScope(IO).launch {
-                ImageUtils.instant?.createPdf(imagesToConvert, currentPhotoPath).let {
-                    pdfCreated(it!!)
+            notify.invokeOnCompletion {
+                val task = CoroutineScope(IO).launch()
+                {
+                    if (toConvert) {
+                        for (i in imagesToConvert.indices) {
+                            createTempFile("_${i}", "TEMP", ".jpg")
+                            blackAndWhite(imagesToConvert[i])
+                        }
+                    }
+                }
+                task.invokeOnCompletion {
+                    imagePagerViewModel.initTempImages()
+
+                    //Invoke create pdf file method
+                    if (!fileName.isEmpty() && !fileName.isBlank()) {
+                        createFile(fileName, "", ".pdf")
+                    } else {
+                        createFile(timeStamp, "PDF_", ".pdf")
+                    }
+
+                    //Launch pdf creation method
+                    CoroutineScope(IO).launch {
+                        if (toConvert) {
+                            ImageUtils.instant?.createPdf(tempImagesToConvert, currentPhotoPath)
+                                .let {
+                                    pdfCreated(it!!)
+                                }
+                            CoroutineScope(Main).launch {
+                                tempImagesToConvert.forEach {
+                                    File(it.path).delete()
+                                }
+                            }
+                        } else {
+                            ImageUtils.instant?.createPdf(imagesToConvert, currentPhotoPath).let {
+                                pdfCreated(it!!)
+                            }
+                        }
+                    }
                 }
             }
         }
     }
+
 
     fun pdfCreated(success: Boolean) {
 
@@ -118,6 +159,7 @@ class convert_to_pdf_dialog : DialogFragment() {
     //Utility function
 
     fun createFile(fileName: String, prefix: String, suffix: String) {
+
         val name = prefix + fileName + suffix
         File("/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/PDF/$name").apply {
             currentPhotoPath = absolutePath
@@ -128,7 +170,33 @@ class convert_to_pdf_dialog : DialogFragment() {
                 File(currentPhotoPath)
             )
         }
+    }
 
+    fun createTempFile(fileName: String, prefix: String, suffix: String) {
+        val name = prefix + fileName + suffix
+        File("/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/TMP/$name").apply {
+            currentPhotoPath = absolutePath
+        }.createNewFile().also {
+            photoURI = FileProvider.getUriForFile(
+                requireContext(),
+                "com.pratiksahu.android.fileprovider",
+                File(currentPhotoPath)
+            )
+        }
+    }
+
+    fun blackAndWhite(uri: Uri) {
+        //getting bitmap
+        val result = toBlackWhite.convertToBW(requireContext(), uri)
+        //creating outputStream to store grayscaled version
+        val opstream = FileOutputStream(currentPhotoPath)
+
+        //creating byteoutputstream
+        val btopstream = ByteArrayOutputStream(1024)
+        result?.compress(Bitmap.CompressFormat.JPEG, 80, btopstream)
+        opstream.write(btopstream.toByteArray())
+        opstream.flush()
+        opstream.close()
     }
 
 

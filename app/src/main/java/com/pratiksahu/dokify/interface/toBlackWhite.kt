@@ -40,7 +40,7 @@ class ToBlackWhite {
         val output = Allocation.createTyped(renderScript, input.type)
 
         //Inverts the bitmap
-        //U8_4 : Grayscale can be done in 8bit
+        //U8_4 : Black and white can be done in 8bit
         val invert = ScriptIntrinsicColorMatrix.create(renderScript)
         invert.setColorMatrix(matrix)
         invert.forEach(input, output)

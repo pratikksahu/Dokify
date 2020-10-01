@@ -13,8 +13,8 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
-            android:layout_width="250sp"
-            android:layout_height="120sp"
+            android:layout_width="200sp"
+            android:layout_height="170sp"
             android:background="@drawable/popup_background"
             tools:context=".ui.dialogs.crop_or_convert_dialog">
 
@@ -22,11 +22,11 @@
                 android:id="@+id/cropImage"
                 android:layout_width="80sp"
                 android:layout_height="80sp"
-                android:layout_marginEnd="12dp"
+                android:layout_marginTop="4dp"
                 android:src="@drawable/ic_button_crop"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
             <Space
                 android:layout_width="wrap_content"
@@ -42,8 +42,34 @@
                 android:layout_height="80sp"
                 android:layout_marginStart="16dp"
                 android:src="@drawable/ic_button_contrast"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.228" />
+
+            <CheckBox
+                android:id="@+id/keepOriginal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Switch"
+                android:textColor="#000000"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.503"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cropImage" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Crop Image"
+                android:textColor="#000000"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.502"
+                app:layout_constraintStart_toStartOf="@+id/convertImage"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

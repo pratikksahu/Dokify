@@ -13,6 +13,28 @@
         tools:context=".ui.dialogs.convert_to_pdf_dialog">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/pdfProgressLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ProgressBar
+                android:id="@+id/creatingPdfProgress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="120sp"
+                android:layout_height="wrap_content"
+                android:animationResolution="@android:integer/config_mediumAnimTime"
+                android:indeterminate="true"
+                android:indeterminateBehavior="repeat"
+                android:indeterminateDuration="3"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/pdfSetupLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/popup_background">
@@ -33,13 +55,13 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <Switch
+            <CheckBox
                 android:id="@+id/colorOrNot"
                 android:layout_width="150sp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:maxLines="2"
-                android:text="Color PDF"
+                android:text="Black And White PDF"
                 android:textColor="#000000"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.124"

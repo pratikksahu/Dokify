@@ -53,6 +53,8 @@ class crop_or_convert_dialog : DialogFragment() {
     private var converter = ToBlackWhite()
     private val imageList = ArrayList<DocInfo>()
 
+    private var deleteOriginal: Boolean = false
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -67,6 +69,7 @@ class crop_or_convert_dialog : DialogFragment() {
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        keepOriginal.text = "Delete Original Photo"
         initListeners()
     }
 
@@ -81,6 +84,9 @@ class crop_or_convert_dialog : DialogFragment() {
             grayScaledUri(selectedImage.imageUri)
             imagePagerViewModel.initImages()
             navController.popBackStack()
+        }
+        keepOriginal.setOnCheckedChangeListener { buttonView, isChecked ->
+            deleteOriginal = isChecked
         }
     }
 
@@ -106,6 +112,12 @@ class crop_or_convert_dialog : DialogFragment() {
 
         val result = CropImage.getActivityResult(data)
         if (resultCode == RESULT_OK) {
+
+            //User decided to delete old photo
+            if (deleteOriginal) {
+                File(selectedImage.imageUri.path).delete()
+            }
+
             val resultUri: Uri = result.uri
             val srcPath: String = resultUri.path.toString()
             val destPath = currentPhotoPath

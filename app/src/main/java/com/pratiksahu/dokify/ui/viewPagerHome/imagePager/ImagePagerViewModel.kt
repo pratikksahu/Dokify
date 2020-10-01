@@ -35,6 +35,9 @@ class ImagePagerViewModel @ViewModelInject constructor() : ViewModel(), Lifecycl
     private val _imageToConvert = MutableLiveData<ArrayList<Uri>>()
     val imageToConvert: LiveData<ArrayList<Uri>> = _imageToConvert
 
+    private val _tempImageToConvert = MutableLiveData<ArrayList<Uri>>()
+    val tempImageToConvert: LiveData<ArrayList<Uri>> = _tempImageToConvert
+
     fun setImage(img: ArrayList<DocInfo>) {
         _newImage.value = img
     }
@@ -49,6 +52,38 @@ class ImagePagerViewModel @ViewModelInject constructor() : ViewModel(), Lifecycl
 
     fun setImagesToConvert(list: ArrayList<Uri>) {
         _imageToConvert.value = list
+    }
+
+    fun setTempImagesToConvert(list: ArrayList<Uri>) {
+        _tempImageToConvert.value = list
+    }
+
+    fun initTempImages() {
+        CoroutineScope(IO).launch {
+            CoroutineScope(Main).launch {
+                _loading.value = true
+            }
+            val path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/TMP"
+            val directory = File(path)
+            if (directory.exists()) {
+                val files: Array<File> = directory.listFiles()
+                if (files.size > 0) {
+                    Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed())
+                    val tempDocInfoList = ArrayList<Uri>()
+                    files.forEach {
+                        tempDocInfoList.add(it.toUri())
+                    }
+                    CoroutineScope(Main).launch {
+                        setTempImagesToConvert(tempDocInfoList)
+                    }
+                }
+            } else {
+                directory.mkdir()
+            }
+            CoroutineScope(Main).launch {
+                _loading.value = false
+            }
+        }
     }
 
 
@@ -78,6 +113,8 @@ class ImagePagerViewModel @ViewModelInject constructor() : ViewModel(), Lifecycl
                         _isEmpty.value = true
                     }
                 }
+            } else {
+                directory.mkdir()
             }
             CoroutineScope(Main).launch {
                 _loading.value = false
