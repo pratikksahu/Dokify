@@ -2,7 +2,7 @@
     <string name="app_name">Dokify</string>
 
     <string name="imageOutputPath">/storage/emulated/0/Android/data/com.pratiksahu.dokify/</string>
-    <string name="pdfOutputPath">/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/pdf/</string>
+    <string name="pdfOutputPath">/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/PDF/</string>
     <string name="emptyFolderMessage">Add images to create PDF</string>
     <string name="notEmptyFolderMessage">Convert to pdf by holding image</string>
 </resources>

@@ -19,7 +19,7 @@ import java.io.IOException
 
 class ImageUtils {
     val TAG_IMAGE_RESOLUTION = "IMAGE_RESOLUTION"
-    fun createPdf(imageList: ArrayList<Uri>, filePath: String) {
+    fun createPdf(imageList: ArrayList<Uri>, filePath: String): Boolean {
 
         // Creating a PdfDocument object
         val pdfOut = FileOutputStream(filePath)
@@ -29,28 +29,33 @@ class ImageUtils {
         val pdfDocument =
             PdfDocument(pdfWriter)
         val document = Document(pdfDocument)
+        try {
+            imageList.forEach {
 
-        imageList.forEach {
+                val imgIn = FileInputStream(it.path)
+                val byteOut = ByteArrayOutputStream()
 
-            val imgIn = FileInputStream(it.path)
-            val byteOut = ByteArrayOutputStream()
+                val data = ByteArray(1024)
+                while (imgIn.read(data, 0, data.size) != -1) {
+                    byteOut.write(data)
+                }
+                byteOut.flush()
+                imgIn.close()
 
-            val data = ByteArray(1024)
-            while (imgIn.read(data, 0, data.size) != -1) {
-                byteOut.write(data)
+                //ImageData
+                val imgData = ImageDataFactory.create(byteOut.toByteArray())
+                byteOut.close()
+                val pdfImage = Image(imgData)
+
+                document.add(pdfImage)
+
             }
-            byteOut.flush()
-            imgIn.close()
-
-            //ImageData
-            val imgData = ImageDataFactory.create(byteOut.toByteArray())
-            byteOut.close()
-            val pdfImage = Image(imgData)
-
-            document.add(pdfImage)
-
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return false
         }
         document.close()
+        return true
     }
 
     fun getCompressedBitmap(imagePath: String?): Bitmap {

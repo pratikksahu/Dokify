@@ -36,6 +36,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
 
     @Inject
     lateinit var imagePagerViewModel: ImagePagerViewModel
+
     lateinit var binding: CommonViewPagerBinding
 
 
@@ -60,12 +61,13 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
     ): View? {
         setObservables()
         binding = CommonViewPagerBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        actionsTab.layoutTransition.setAnimateParentHierarchy(false)
         progressCircle = CircularProgressDrawable(requireContext())
         progressCircle.strokeWidth = 5f
         progressCircle.centerRadius = 30f
@@ -218,6 +220,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
 
     fun setupSelectAllCheckBoxListener() {
         selectAllCheckBox.setOnCheckedChangeListener(null)
+        selectAllCheckBox.isChecked = false
         selectAllCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 selectAllCheckBox.text = "Unselect All"
@@ -260,7 +263,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
         pdfDialog.visibility = VISIBLE
         cancelSelectionButton.visibility = VISIBLE
 
-        //Show guide text
+        //Hide guide text
         guideText.visibility = GONE
 
     }

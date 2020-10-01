@@ -1,6 +1,5 @@
-package com.pratiksahu.dokify.ui.viewPagerHome.imagePager
+package com.pratiksahu.dokify.ui.viewPagerHome.pdfPager
 
-import android.net.Uri
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LifecycleObserver
@@ -9,22 +8,17 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.pratiksahu.dokify.model.DocInfo
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.*
 import kotlin.Comparator
 import kotlin.collections.ArrayList
 
-class ImagePagerViewModel @ViewModelInject constructor() : ViewModel(), LifecycleObserver {
-
-
-    private val _newImage = MutableLiveData<ArrayList<DocInfo>>()
-    val imagesInFolder: LiveData<ArrayList<DocInfo>> = _newImage
-
-    private val _selectedImage = MutableLiveData<DocInfo>()
-    val selectedImage: LiveData<DocInfo> = _selectedImage
+class PdfViewPagerFragmentViewModel @ViewModelInject constructor() : ViewModel(),
+    LifecycleObserver {
 
     private val _loading = MutableLiveData<Boolean>()
     val loading: LiveData<Boolean> = _loading
@@ -32,32 +26,20 @@ class ImagePagerViewModel @ViewModelInject constructor() : ViewModel(), Lifecycl
     private val _isEmpty = MutableLiveData<Boolean>()
     val isEmpty: LiveData<Boolean> = _isEmpty
 
-    private val _imageToConvert = MutableLiveData<ArrayList<Uri>>()
-    val imageToConvert: LiveData<ArrayList<Uri>> = _imageToConvert
+    private val _pdfInFolder = MutableLiveData<ArrayList<DocInfo>>()
+    val pdfInFolder: LiveData<ArrayList<DocInfo>> = _pdfInFolder
 
-    fun setImage(img: ArrayList<DocInfo>) {
-        _newImage.value = img
+
+    fun setPdf(list: ArrayList<DocInfo>) {
+        _pdfInFolder.value = list
     }
 
-    fun setSelectedImage(obj: DocInfo) {
-        _selectedImage.value = obj
-    }
-
-    fun isLoading(value: Boolean) {
-        _loading.value = value
-    }
-
-    fun setImagesToConvert(list: ArrayList<Uri>) {
-        _imageToConvert.value = list
-    }
-
-
-    fun initImages() {
-        CoroutineScope(IO).launch {
-            CoroutineScope(Main).launch {
+    fun initPdf() {
+        CoroutineScope(Dispatchers.IO).launch {
+            CoroutineScope(Dispatchers.Main).launch {
                 _loading.value = true
             }
-            val path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/Pictures"
+            val path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/PDF"
             val directory = File(path)
             if (directory.exists()) {
                 val files: Array<File> = directory.listFiles()
@@ -65,24 +47,25 @@ class ImagePagerViewModel @ViewModelInject constructor() : ViewModel(), Lifecycl
                     Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed())
                     val tempDocInfoList = ArrayList<DocInfo>()
                     for (i in files.indices) {
+                        val size = files[i].length().toBigDecimal().divide(BigDecimal(1000000))
+                            .setScale(3, RoundingMode.FLOOR).toString() + "MB"
                         val tempDocInfo =
-                            DocInfo(files[i].toUri(), files[i].name, files[i].length().toString())
+                            DocInfo(files[i].toUri(), files[i].name, size)
                         tempDocInfoList.add(tempDocInfo)
                     }
-                    CoroutineScope(Main).launch {
-                        setImage(tempDocInfoList)
+                    CoroutineScope(Dispatchers.Main).launch {
+                        setPdf(tempDocInfoList)
                         _isEmpty.value = false
                     }
                 } else {
-                    CoroutineScope(Main).launch {
+                    CoroutineScope(Dispatchers.Main).launch {
                         _isEmpty.value = true
                     }
                 }
             }
-            CoroutineScope(Main).launch {
+            CoroutineScope(Dispatchers.Main).launch {
                 _loading.value = false
             }
         }
     }
-
 }

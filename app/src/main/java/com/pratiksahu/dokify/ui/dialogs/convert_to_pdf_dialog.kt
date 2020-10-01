@@ -15,13 +15,14 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.NavHostFragment
 import com.pratiksahu.dokify.databinding.ConvertToPdfDialogBinding
 import com.pratiksahu.dokify.ui.viewPagerHome.imagePager.ImagePagerViewModel
+import com.pratiksahu.dokify.ui.viewPagerHome.pdfPager.PdfViewPagerFragmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.convert_to_pdf_dialog.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import java.io.File
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -34,6 +35,9 @@ class convert_to_pdf_dialog : DialogFragment() {
     @Inject
     lateinit var imagePagerViewModel: ImagePagerViewModel
 
+    @Inject
+    lateinit var pdfViewPagerFragmentViewModel: PdfViewPagerFragmentViewModel
+
     private val navController by lazy { NavHostFragment.findNavController(this) }
     lateinit var binding: ConvertToPdfDialogBinding
 
@@ -41,7 +45,10 @@ class convert_to_pdf_dialog : DialogFragment() {
     lateinit var photoURI: Uri
 
     val imagesToConvert = ArrayList<Uri>()
+
+    val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
     var fileName = ""
+
     var toConvert = false
 
     override fun onCreateView(
@@ -55,6 +62,8 @@ class convert_to_pdf_dialog : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        makePDF.text = "Create PDF"
+        fileNameTextBox.hint = timeStamp
         setupObservers()
         setupListeners()
     }
@@ -66,8 +75,6 @@ class convert_to_pdf_dialog : DialogFragment() {
     }
 
     fun setupListeners() {
-        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-        fileNameTextBox.setText(timeStamp)
         fileNameTextBox.addTextChangedListener {
             fileName = it.toString()
         }
@@ -81,51 +88,49 @@ class convert_to_pdf_dialog : DialogFragment() {
         }
 
         makePDF.setOnClickListener {
-            createFile(fileName, "PDF/", "PDF", ".pdf")
-            CoroutineScope(IO).launch {
-                ImageUtils.instant?.createPdf(imagesToConvert, currentPhotoPath)
+            if (!fileName.isEmpty() && !fileName.isBlank())
+                createFile(fileName, "", ".pdf")
+            else {
+                createFile(timeStamp, "PDF_", ".pdf")
             }
+            CoroutineScope(IO).launch {
+                ImageUtils.instant?.createPdf(imagesToConvert, currentPhotoPath).let {
+                    pdfCreated(it!!)
+                }
+            }
+        }
+    }
+
+    fun pdfCreated(success: Boolean) {
+
+        CoroutineScope(Main).launch {
+            val name = File(currentPhotoPath).name
+            if (success) {
+                ToastMessage("$name created successfully")
+            } else {
+                ToastMessage("$name failed to create , Try again")
+            }
+            pdfViewPagerFragmentViewModel.initPdf()
+            navController.popBackStack()
         }
     }
 
     //Utility function
 
-    fun createFile(fileName: String, dir: String, prefix: String, suffix: String) {
-        val photoFile: File? = try {
-            createImageFile(fileName, dir, prefix, suffix)
-        } catch (ex: IOException) {
-            // Error occurred while creating the File
-            ToastMessage("Error Creating File")
-            null
-        }
-        //Creating Uri for generated path
-        photoFile?.also {
+    fun createFile(fileName: String, prefix: String, suffix: String) {
+        val name = prefix + fileName + suffix
+        File("/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/PDF/$name").apply {
+            currentPhotoPath = absolutePath
+        }.createNewFile().also {
             photoURI = FileProvider.getUriForFile(
                 requireContext(),
                 "com.pratiksahu.android.fileprovider",
-                it
+                File(currentPhotoPath)
             )
         }
+
     }
 
-    @SuppressLint("SimpleDateFormat")
-    @Throws(IOException::class)
-    private fun createImageFile(
-        fileName: String,
-        dir: String,
-        prefix: String,
-        suffix: String
-    ): File {
-        val storageDir: File? = context?.getExternalFilesDir(dir)
-        return File.createTempFile(
-            "${prefix}_${fileName}", /* prefix */
-            "$suffix", /* suffix */
-            storageDir /* directory */
-        ).apply {
-            // Save a file: path for use with ACTION_VIEW intents
-            currentPhotoPath = absolutePath
-        }
-    }
 
     fun ToastMessage(msg: String) {
         Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
