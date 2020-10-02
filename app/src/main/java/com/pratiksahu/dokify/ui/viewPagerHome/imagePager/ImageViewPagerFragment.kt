@@ -14,8 +14,7 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.NavHostFragment
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.*
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.pratiksahu.dokify.R
 import com.pratiksahu.dokify.`interface`.ToBlackWhite
@@ -31,7 +30,9 @@ import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -63,7 +64,36 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
     private var toBlackWhite = ToBlackWhite()
 
     var flagForSelection = 0
+    var flagForRearrange = 0
 
+
+    //Drag and drop handler
+    val callback = object : ItemTouchHelper.SimpleCallback(
+        ItemTouchHelper.UP or ItemTouchHelper.DOWN or
+                ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT or ItemTouchHelper.START or ItemTouchHelper.END,
+        0
+    ) {
+        override fun onMove(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder
+        ): Boolean {
+            val fromPosition = viewHolder.adapterPosition
+            val targetPosition = target.adapterPosition
+
+            Collections.swap(imageList, fromPosition, targetPosition)
+
+            recyclerView.adapter!!.notifyItemMoved(fromPosition, targetPosition)
+            return false
+        }
+
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            TODO("Not yet implemented")
+        }
+    }
+    val helper = ItemTouchHelper(callback)
+
+    //
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -86,11 +116,16 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
         progressCircle.centerRadius = 30f
         progressCircle.start()
 
-
+        importedDocksPdf.visibility = GONE
         hideActionsTabView()
+        rearrangeButton.visibility = GONE
+        moreOptions.visibility = GONE
+        guideText.visibility = VISIBLE
         pdfButtonListener()
         setupSelectAllCheckBoxListener()
         setupCancelButtonListener()
+        setupRearrangeButton()
+        setupmoreOptionsListener()
         setupDeleteImageButtonListener()
         initDocsAdapter()
     }
@@ -138,10 +173,16 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
         imagePagerViewModel.initImages()
 
         imagePagerViewModel.isEmpty.observe(viewLifecycleOwner, Observer { emptyFolder ->
-            if (emptyFolder)
+            if (emptyFolder) {
+                rearrangeButton.visibility = GONE
+                moreOptions.visibility = GONE
                 guideText.text = getString(R.string.emptyFolderMessage)
-            else
-                guideText.text = getString(R.string.notEmptyFolderMessage)
+                guideText.visibility = VISIBLE
+            } else {
+                guideText.visibility = GONE
+                moreOptions.visibility = VISIBLE
+                rearrangeButton.visibility = VISIBLE
+            }
         })
         imagePagerViewModel.imagesInFolder.observe(viewLifecycleOwner, Observer {
             imageList.clear()
@@ -199,14 +240,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
                     }
                     importedImagesAdapter?.setSelectedItems(selectedItems)
                 }
-            ) { view, pos, dockItem ->
-
-                //LONG PRESS
-                showActionsTabView()
-                flagForSelection = 1
-                importedImagesAdapter?.setIsLongClicked(true)
-
-            }
+            )
             importedocks.apply {
                 layoutManager = GridLayoutManager(requireContext(), 2)
                 itemAnimator = DefaultItemAnimator()
@@ -214,6 +248,18 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
             }
         }
 
+    }
+
+
+    fun setupmoreOptionsListener() {
+        moreOptions.setOnClickListener {
+            if (imageList.isNotEmpty()) {
+                helper.attachToRecyclerView(null)
+                showActionsTabView()
+                flagForSelection = 1
+                importedImagesAdapter?.setIsLongClicked(true)
+            }
+        }
     }
 
     fun pdfButtonListener() {
@@ -226,25 +272,56 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
                 loadingData.visibility = VISIBLE
                 waitMessage.visibility = VISIBLE
             }
+            val deleteTask = CoroutineScope(IO).launch {
+                val path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/TMP"
+                val directory = File(path)
+                if (!directory.exists())
+                    directory.mkdir()
+                else {
+                    val del = directory.listFiles()
+                    if (del != null)
+                        del.forEach {
+                            File(it.path).delete()
+                        }
+                }
+            }
             val task = CoroutineScope(IO).launch {
-
                 for (i in selectedItemsImage.indices) {
                     createTempFile("_${i}", "TEMP", ".jpg")
                     blackAndWhite(selectedItemsImage[i])
                 }
             }
-            task.invokeOnCompletion {
-                CoroutineScope(Main).launch {
-                    importedocks.visibility = VISIBLE
-                    waitMessage.visibility = GONE
-                    loadingData.visibility = GONE
-                    navController.navigate(R.id.action_landingPage_to_convert_to_pdf_dialog)
+            deleteTask.invokeOnCompletion {
+                task.invokeOnCompletion {
+                    CoroutineScope(Main).launch {
+                        importedocks.visibility = VISIBLE
+                        waitMessage.visibility = GONE
+                        loadingData.visibility = GONE
+                        navController.navigate(R.id.action_landingPage_to_convert_to_pdf_dialog)
+                    }
                 }
             }
 
         }
     }
 
+    fun setupRearrangeButton() {
+        rearrangeButton.setOnClickListener {
+            if (flagForRearrange == 0) {
+                flagForRearrange = 1
+                rearrangeButton.text = "DONE"
+                importedocks.layoutManager = LinearLayoutManager(requireContext())
+                helper.attachToRecyclerView(importedocks)
+                moreOptions.visibility = GONE
+            } else if (flagForRearrange == 1) {
+                flagForRearrange = 0
+                rearrangeButton.text = "REARRANGE"
+                importedocks.layoutManager = GridLayoutManager(requireContext(), 2)
+                helper.attachToRecyclerView(null)
+                moreOptions.visibility = VISIBLE
+            }
+        }
+    }
 
     fun setupDeleteImageButtonListener() {
         deleteFileButton.setOnClickListener {
@@ -271,6 +348,20 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
     fun setupCancelButtonListener() {
         cancelSelectionButton.setOnClickListener(null)
         cancelSelectionButton.setOnClickListener {
+            CoroutineScope(IO).launch {
+                val path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/TMP"
+                val directory = File(path)
+                if (!directory.exists())
+                    directory.mkdir()
+                else {
+                    val del = directory.listFiles()
+                    if (del != null)
+                        del.forEach {
+                            File(it.path).delete()
+                        }
+                }
+            }
+            helper.attachToRecyclerView(null)
             flagForSelection = 0
             importedImagesAdapter?.setIsLongClicked(false)
             selectedItems.clear()
@@ -317,8 +408,9 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
         cancelSelectionButton.visibility = GONE
 
         //Show guide text
-        guideText.visibility = VISIBLE
-
+        guideText.visibility = GONE
+        rearrangeButton.visibility = VISIBLE
+        moreOptions.visibility = VISIBLE
     }
 
     fun showActionsTabView() {
@@ -329,14 +421,17 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
         shareMultiple.visibility = GONE
         cancelSelectionButton.visibility = VISIBLE
 
-        //Hide guide text
+        //Hide guide text and Rearrange button
         guideText.visibility = GONE
-
+        rearrangeButton.visibility = GONE
+        moreOptions.visibility = GONE
     }
 
     fun createTempFile(fileName: String, prefix: String, suffix: String) {
         val name = prefix + fileName + suffix
-        File("/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/TMP/$name").apply {
+        val path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/TMP/"
+        File(path).mkdir()
+        File("$path$name").apply {
             currentPhotoPath = absolutePath
         }.createNewFile().also {
             photoURI = FileProvider.getUriForFile(
@@ -355,7 +450,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
 
         //creating byteoutputstream
         val btopstream = ByteArrayOutputStream(1024)
-        result?.compress(Bitmap.CompressFormat.JPEG, 80, btopstream)
+        result?.compress(Bitmap.CompressFormat.JPEG, 100, btopstream)
         opstream.write(btopstream.toByteArray())
         opstream.flush()
         opstream.close()

@@ -15,9 +15,23 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/actionsTab"
             android:layout_width="match_parent"
-            android:layout_height="50sp"
+            android:layout_height="65sp"
             android:animateLayoutChanges="true"
             android:visibility="visible">
+
+            <Button
+                android:id="@+id/moreOptions"
+                android:layout_width="120sp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="28dp"
+                android:background="@drawable/button_background"
+                android:text="More Options"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.916"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.47" />
 
             <CheckBox
                 android:id="@+id/selectAllCheckBox"
@@ -79,8 +93,22 @@
                 android:text="Add images to create PDF"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.497"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/rearrangeButton"
+                android:layout_width="100sp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_background"
+                android:text="Rearrange"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.196"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.47" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -93,6 +121,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:alwaysDrawnWithCache="true"
+                android:visibility="gone"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -107,7 +136,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:alwaysDrawnWithCache="true"
-                android:visibility="gone"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

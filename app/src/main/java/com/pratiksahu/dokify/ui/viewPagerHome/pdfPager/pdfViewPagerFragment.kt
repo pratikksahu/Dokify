@@ -67,7 +67,7 @@ class PdfViewPagerFragment : Fragment(R.layout.common_view_pager) {
         progressCircle.strokeWidth = 5f
         progressCircle.centerRadius = 30f
         progressCircle.start()
-
+        importedocks.visibility = GONE
         hideActionsTabView()
         setupSelectAllCheckBoxListener()
         setupShareMultiple()
@@ -301,6 +301,9 @@ class PdfViewPagerFragment : Fragment(R.layout.common_view_pager) {
         shareMultiple.visibility = GONE
         //Show guide text
         guideText.visibility = View.VISIBLE
+        //Hide rearrange and moreOptions button
+        rearrangeButton.visibility = GONE
+        moreOptions.visibility = GONE
     }
 
     fun showActionsTabView() {
@@ -310,8 +313,11 @@ class PdfViewPagerFragment : Fragment(R.layout.common_view_pager) {
         deleteFileButton.visibility = View.VISIBLE
         cancelSelectionButton.visibility = View.VISIBLE
         shareMultiple.visibility = VISIBLE
-        //Hide guide text
+
+        //Hide guide text and rearrange button
         guideText.visibility = GONE
+        rearrangeButton.visibility = GONE
+        moreOptions.visibility = GONE
     }
 
 }

@@ -9,23 +9,24 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
-        android:layout_width="250sp"
-        android:layout_height="120sp"
+        android:layout_width="260sp"
+        android:layout_height="180sp"
         android:background="@drawable/popup_background"
         tools:context=".ui.dialogs.add_files_popup">
+
 
         <ImageView
             android:id="@+id/fromGallery"
             android:layout_width="80sp"
             android:layout_height="80sp"
-            android:layout_marginEnd="12dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
             android:src="@drawable/ic_button_gallery"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-
         <Space
+            android:id="@+id/space"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -39,10 +40,61 @@
             android:layout_width="80sp"
             android:layout_height="80sp"
             android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
             android:src="@drawable/ic_button_camera"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="4dp"
+            android:text="Camera"
+            android:textColor="#000000"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fromCamera" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="184dp"
+            android:layout_marginTop="4dp"
+            android:text="Gallery"
+            android:textColor="#000000"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fromGallery" />
+
+        <EditText
+            android:id="@+id/compressValue"
+            android:layout_width="50sp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="124dp"
+            android:background="@null"
+            android:editable="true"
+            android:ems="10"
+            android:inputType="number"
+            android:singleLine="true"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Compression value \n Full quality = 100"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textSize="10sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/compressValue" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

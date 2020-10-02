@@ -1,14 +1,12 @@
 package com.pratiksahu.dokify.ui.dialogs
 
 import android.Manifest.permission
-import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.NavHostFragment
 import com.pratiksahu.dokify.R
@@ -31,7 +30,6 @@ import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -50,6 +48,7 @@ class add_files_popup : DialogFragment() {
     lateinit var photoURI: Uri
     private var flag = 0
     private val navController by lazy { NavHostFragment.findNavController(this) }
+    var compression = 100
 
 
     val permissionRequired = arrayOf(
@@ -86,19 +85,21 @@ class add_files_popup : DialogFragment() {
                         Log.d(TAG_IMPORT_GALLERY, "Loading Image : true")
                         imagePagerViewModel.isLoading(true)
                     }
-                    it.forEach { obj ->
-                        createFile()
+                    for (i in it.indices) {
+                        val timeStamp =
+                            i.toString() + "_" + SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+                        createFile(timeStamp, "JPEG", ".jpeg")
                         val bitMap = ImageDecoder.decodeBitmap(
                             ImageDecoder.createSource(
                                 requireContext().contentResolver,
-                                obj
+                                it[i]
                             )
                         )
                         val opstream = FileOutputStream(currentPhotoPath)
 
                         //creating byteoutputstream
                         val btopstream = ByteArrayOutputStream(1024)
-                        bitMap.compress(Bitmap.CompressFormat.JPEG, 20, btopstream)
+                        bitMap.compress(Bitmap.CompressFormat.JPEG, compression, btopstream)
                         opstream.write(btopstream.toByteArray())
                         opstream.flush()
                         opstream.close()
@@ -115,22 +116,24 @@ class add_files_popup : DialogFragment() {
 
     private val cameraActivityRegister =
         registerForActivityResult(ActivityResultContracts.TakePicture()) {
-            if (it) {
-                ToastMessage("Got it")
-                Log.d(TAG_IMPORT_CAMERA, "Camera result: $it")
-                val sizeStream =
-                    requireContext().contentResolver.openInputStream(photoURI)?.available()
-                imagePagerViewModel.initImages()
-            } else {
-                Log.d(TAG_IMPORT_CAMERA, "Camera result: $it")
-                File(currentPhotoPath).delete().let {
-                    Log.d(
-                        TAG_IMPORT_CAMERA,
-                        "Temp Photo Deleted <--- $it  Path <-- $currentPhotoPath"
-                    )
+            CoroutineScope(IO).launch {
+                if (it) {
+                    Log.d(TAG_IMPORT_CAMERA, "Camera result: $it")
+                    imagePagerViewModel.initImages()
+                } else {
+                    Log.d(TAG_IMPORT_CAMERA, "Camera result: $it")
+                    File(currentPhotoPath).delete().let {
+                        Log.d(
+                            TAG_IMPORT_CAMERA,
+                            "Temp Photo Deleted <--- $it  Path <-- $currentPhotoPath"
+                        )
+                    }
+                }
+            }.invokeOnCompletion {
+                CoroutineScope(Main).launch {
+                    navController.popBackStack()
                 }
             }
-            navController.popBackStack()
         }
 
     override fun onCreateView(
@@ -144,8 +147,27 @@ class add_files_popup : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         gallerySetup()
         cameraSetup()
+        compressionSetup()
     }
 
+    fun compressionSetup() {
+        compressValue.setText("40")
+        compressValue.addTextChangedListener {
+            val text = it.toString()
+            if (text.isNotBlank() && text.isNotEmpty()) {
+                val value = text.toInt()
+                if (value > 100) {
+                    compression = 100
+                    ToastMessage("Maximum compression value is 100")
+                } else if (value < 20) {
+                    compression = 20
+                    ToastMessage("Minimum compression value is 20")
+                } else {
+                    compression = value
+                }
+            }
+        }
+    }
 
     fun gallerySetup() {
         fromGallery.setOnClickListener {
@@ -200,40 +222,23 @@ class add_files_popup : DialogFragment() {
 
 
     fun openCamera() {
-        createFile()
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        createFile(timeStamp, "JPEG", ".jpeg")
         cameraActivityRegister.launch(photoURI)
     }
 
-    fun createFile() {
-        val photoFile: File? = try {
-            createImageFile()
-        } catch (ex: IOException) {
-            // Error occurred while creating the File
-            ToastMessage("Error Creating File")
-            null
-        }
-        //Creating Uri for generated path
-        photoFile?.also {
+    fun createFile(fileName: String, prefix: String, suffix: String) {
+        val name = prefix + fileName + suffix
+        val path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/Pictures/"
+        File(path).mkdir()
+        File("${path}${name}").apply {
+            currentPhotoPath = absolutePath
+        }.createNewFile().also {
             photoURI = FileProvider.getUriForFile(
                 requireContext(),
                 "com.pratiksahu.android.fileprovider",
-                it
+                File(currentPhotoPath)
             )
-        }
-    }
-
-    @SuppressLint("SimpleDateFormat")
-    @Throws(IOException::class)
-    private fun createImageFile(): File {
-        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-        val storageDir: File? = context?.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        return File.createTempFile(
-            "JPEG_${timeStamp}_", /* prefix */
-            ".jpg", /* suffix */
-            storageDir /* directory */
-        ).apply {
-            // Save a file: path for use with ACTION_VIEW intents
-            currentPhotoPath = absolutePath
         }
     }
 

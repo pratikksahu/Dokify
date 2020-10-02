@@ -12,6 +12,10 @@ import com.pratiksahu.dokify.databinding.LandingPageFragmentBinding
 import com.pratiksahu.dokify.ui.viewPagerHome.viewPagerAdapter.ImageAndPdfAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.landing_page_fragment.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
+import java.io.File
 
 @AndroidEntryPoint
 class landingPage : Fragment(R.layout.landing_page_fragment) {
@@ -33,8 +37,30 @@ class landingPage : Fragment(R.layout.landing_page_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        CoroutineScope(IO).launch {
+            createPdfDirectroy()
+            createTempDirectory()
+        }
         AddFilesButtonSetup()
         initViewPager()
+    }
+
+    fun createTempDirectory() {
+        //Temporary directory
+        val path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/TMP"
+        val directory = File(path)
+        if (directory.exists())
+            directory.delete()
+        directory.mkdir()
+    }
+
+    fun createPdfDirectroy() {
+        //PDF directory
+        val path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/PDF"
+        val directory = File(path)
+        if (directory.exists())
+            directory.delete()
+        directory.mkdir()
     }
 
     fun AddFilesButtonSetup() {

@@ -6,10 +6,13 @@ import android.media.ExifInterface
 import android.net.Uri
 import android.util.Log
 import com.itextpdf.io.image.ImageDataFactory
+import com.itextpdf.kernel.geom.PageSize
+import com.itextpdf.kernel.geom.Rectangle
 import com.itextpdf.kernel.pdf.PdfDocument
 import com.itextpdf.kernel.pdf.PdfWriter
 import com.itextpdf.kernel.pdf.WriterProperties
 import com.itextpdf.layout.Document
+import com.itextpdf.layout.element.AreaBreak
 import com.itextpdf.layout.element.Image
 import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
@@ -20,8 +23,11 @@ import java.io.IOException
 class ImageUtils {
     val TAG_IMAGE_RESOLUTION = "IMAGE_RESOLUTION"
     fun createPdf(imageList: ArrayList<Uri>, filePath: String): Boolean {
-
         val list = imageList
+        if (list.isEmpty())
+            return false
+        var width: Float
+        var height: Float
         // Creating a PdfDocument object
         val pdfOut = FileOutputStream(filePath)
         val writerProperties = WriterProperties().setFullCompressionMode(true)
@@ -29,30 +35,69 @@ class ImageUtils {
         val pdfWriter = PdfWriter(pdfOut, writerProperties)
         val pdfDocument =
             PdfDocument(pdfWriter)
-        val document = Document(pdfDocument)
+        //Getting height and width
+        var bm = BitmapFactory.decodeFile(list[0].path)
+        width = bm.width.toFloat()
+        height = bm.height.toFloat()
+        //Creating first page outside loop to avoid first page being blank
+        val document = Document(pdfDocument, PageSize(width, height))
+        document.setMargins(2F, 2F, 2F, 2F)
+
+        //For first page
         try {
-            for (it in list) {
+            val imgIn = FileInputStream(list[0].path)
+            val byteOut = ByteArrayOutputStream()
 
-                val imgIn = FileInputStream(it.path)
-                val byteOut = ByteArrayOutputStream()
-
-                val data = ByteArray(1024)
-                while (imgIn.read(data, 0, data.size) != -1) {
-                    byteOut.write(data)
-                }
-                byteOut.flush()
-                imgIn.close()
-
-                //ImageData
-                val imgData = ImageDataFactory.create(byteOut.toByteArray())
-                byteOut.close()
-                val pdfImage = Image(imgData)
-
-                document.add(pdfImage)
+            val data = ByteArray(1024)
+            while (imgIn.read(data, 0, data.size) != -1) {
+                byteOut.write(data)
             }
+            byteOut.flush()
+            imgIn.close()
+
+            //ImageData
+            val imgData = ImageDataFactory.create(byteOut.toByteArray())
+            byteOut.close()
+            val pdfImage = Image(imgData)
+            document.add(pdfImage)
+            list.removeAt(0)
         } catch (e: IOException) {
             e.printStackTrace()
             return false
+        }
+
+        //For rest of page if items greater than 1
+        if (list.isNotEmpty()) {
+            try {
+                for (it in list.indices) {
+                    bm = BitmapFactory.decodeFile(list[it].path)
+                    width = bm.width.toFloat()
+                    height = bm.height.toFloat()
+                    val rectangleImage = Rectangle(width, height)
+                    println("TESTING $rectangleImage")
+                    document.add(AreaBreak(PageSize(rectangleImage)))
+                    document.setMargins(2F, 2F, 2F, 2F)
+
+                    val imgIn = FileInputStream(list[it].path)
+                    val byteOut = ByteArrayOutputStream()
+
+                    val data = ByteArray(1024)
+                    while (imgIn.read(data, 0, data.size) != -1) {
+                        byteOut.write(data)
+                    }
+                    byteOut.flush()
+                    imgIn.close()
+
+                    //ImageData
+                    val imgData = ImageDataFactory.create(byteOut.toByteArray())
+                    byteOut.close()
+                    val pdfImage = Image(imgData)
+                    document.add(pdfImage)
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+                return false
+            }
         }
         document.close()
         return true

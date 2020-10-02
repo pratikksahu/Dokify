@@ -13,7 +13,6 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.NavHostFragment
-import com.pratiksahu.dokify.`interface`.ToBlackWhite
 import com.pratiksahu.dokify.databinding.ConvertToPdfDialogBinding
 import com.pratiksahu.dokify.ui.viewPagerHome.imagePager.ImagePagerViewModel
 import com.pratiksahu.dokify.ui.viewPagerHome.pdfPager.PdfViewPagerFragmentViewModel
@@ -22,6 +21,7 @@ import kotlinx.android.synthetic.main.convert_to_pdf_dialog.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
@@ -44,7 +44,6 @@ class convert_to_pdf_dialog : DialogFragment() {
 
     lateinit var currentPhotoPath: String
     lateinit var photoURI: Uri
-    private var toBlackWhite = ToBlackWhite()
 
     val imagesToConvert = ArrayList<Uri>()
     val tempImagesToConvert = ArrayList<Uri>()
@@ -53,6 +52,7 @@ class convert_to_pdf_dialog : DialogFragment() {
     var fileName = ""
 
     var toConvert = false
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -78,7 +78,6 @@ class convert_to_pdf_dialog : DialogFragment() {
             imagesToConvert.addAll(it)
         })
         imagePagerViewModel.tempImageToConvert.observe(viewLifecycleOwner, Observer {
-            tempImagesToConvert.clear()
             tempImagesToConvert.addAll(it)
         })
     }
@@ -96,18 +95,19 @@ class convert_to_pdf_dialog : DialogFragment() {
             val notify = CoroutineScope(Main).launch {
                 makePDF.text = "Please Wait"
                 imagePagerViewModel.setIsConverted(false)
+                imagePagerViewModel.initTempImages()
+                delay(15)
             }
             notify.invokeOnCompletion {
-                    imagePagerViewModel.initTempImages()
 
-                    //Invoke create pdf file method
-                    if (!fileName.isEmpty() && !fileName.isBlank()) {
-                        createFile(fileName, "", ".pdf")
-                    } else {
-                        createFile(timeStamp, "PDF_", ".pdf")
-                    }
+                //Invoke create pdf file method
+                if (!fileName.isEmpty() && !fileName.isBlank()) {
+                    createFile(fileName, "", ".pdf")
+                } else {
+                    createFile(timeStamp, "PDF_", ".pdf")
+                }
 
-                    //Launch pdf creation method
+                //Launch pdf creation method
                 val convertTask = CoroutineScope(IO).launch {
                     if (toConvert) {
                         ImageUtils.instant?.createPdf(tempImagesToConvert, currentPhotoPath)
@@ -137,7 +137,8 @@ class convert_to_pdf_dialog : DialogFragment() {
             if (success) {
                 ToastMessage("$name created successfully")
             } else {
-                ToastMessage("$name failed to create , Try again")
+                ToastMessage("$name failed to create , please try again")
+                File(currentPhotoPath).delete()
             }
             pdfViewPagerFragmentViewModel.initPdf()
             imagePagerViewModel.setIsConverted(true)
@@ -160,9 +161,15 @@ class convert_to_pdf_dialog : DialogFragment() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        imagePagerViewModel.setIsConverted(true)
+    }
+
 
     fun ToastMessage(msg: String) {
         Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
     }
+
 
 }
