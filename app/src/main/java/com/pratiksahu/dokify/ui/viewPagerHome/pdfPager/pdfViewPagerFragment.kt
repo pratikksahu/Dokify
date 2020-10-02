@@ -24,7 +24,6 @@ import com.pratiksahu.dokify.model.DocInfo
 import com.pratiksahu.dokify.ui.recyclerViewAdapter.ImportedPdfsAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.common_view_pager.*
-import kotlinx.android.synthetic.main.imported_docks_pdf_item.*
 import java.io.File
 import javax.inject.Inject
 
@@ -34,6 +33,8 @@ class PdfViewPagerFragment : Fragment(R.layout.common_view_pager) {
 
     val TAG_PDF_LIST = "PDF LOADING"
     val TAG_DELETE = "PDF DELETED"
+    val TAG_SHARE = "PDF SHARED"
+    val TAG_OPEN = "PDF OPEN"
 
     @Inject
     lateinit var pdfViewPagerFragmentViewModel: PdfViewPagerFragmentViewModel
@@ -92,9 +93,11 @@ class PdfViewPagerFragment : Fragment(R.layout.common_view_pager) {
             if (it) {
                 importedDocksPdf.visibility = GONE
                 loadingData.visibility = View.VISIBLE
+                waitMessage.visibility = VISIBLE
             } else {
                 loadingData.visibility = GONE
                 importedDocksPdf.visibility = View.VISIBLE
+                waitMessage.visibility = GONE
             }
         })
 
@@ -109,70 +112,68 @@ class PdfViewPagerFragment : Fragment(R.layout.common_view_pager) {
         importedPdfsAdapter = ImportedPdfsAdapter(
             pdfList,
             { view, pos, dockItem ->
-                when (view) {
-                    shareButton -> {
-                        try {
-                            val path = dockItem!!.imageUri.path
-                            val file = File(path)
-                            val uri = FileProvider.getUriForFile(
-                                requireContext(),
-                                "com.pratiksahu.android.fileprovider",
-                                file
-                            )
-                            val intentUrl = Intent(Intent.ACTION_SEND)
-                            intentUrl.setDataAndType(uri, "application/pdf")
-                            intentUrl.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            requireContext().startActivity(intentUrl)
-                        } catch (e: ActivityNotFoundException) {
-                            Toast.makeText(
-                                requireActivity(),
-                                "Unknown Error Occured",
-                                Toast.LENGTH_LONG
-                            )
-                                .show()
-                        }
-                    }
-                    longPressArea -> {
-                        //PDF CLICKED OR NOT
-                        if (flagForSelection == 0) {
-                            try {
-                                val path = dockItem!!.imageUri.path
-                                val file = File(path)
-                                val uri = FileProvider.getUriForFile(
-                                    requireContext(),
-                                    "com.pratiksahu.android.fileprovider",
-                                    file
-                                )
-                                val intentUrl = Intent(Intent.ACTION_VIEW)
-                                intentUrl.setDataAndType(uri, "application/pdf")
-                                intentUrl.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                requireContext().startActivity(intentUrl)
-                            } catch (e: ActivityNotFoundException) {
-                                Toast.makeText(
-                                    requireActivity(),
-                                    "No PDF Viewer Installed",
-                                    Toast.LENGTH_LONG
-                                )
-                                    .show()
-                            }
-                        }
-                        //PDF CLICKED FOR CHECKBOX ACTION OR NOT
-                        if (flagForSelection == 1) {
-                            if (!selectedItems.contains(pos)) {
-                                selectedItems.add(pos)
-                                if (!selectedItemsPdf.contains(dockItem!!.imageUri)) {
-                                    selectedItemsPdf.add(dockItem.imageUri)
-                                }
-                            } else {
-                                if (selectedItems.contains(pos))
-                                    selectedItems.remove(pos)
-                                if (selectedItemsPdf.contains(dockItem!!.imageUri))
-                                    selectedItemsPdf.remove(dockItem.imageUri)
-                            }
-                            importedPdfsAdapter?.setSelectedItems(selectedItems)
-                        }
+                Log.d(TAG_SHARE, dockItem.toString())
+                try {
+                    val path = dockItem!!.imageUri.path
+                    val file = File(path)
+                    val uri = FileProvider.getUriForFile(
+                        requireContext(),
+                        "com.pratiksahu.android.fileprovider",
+                        file
+                    )
+                    val intentUrl = Intent(Intent.ACTION_SEND)
+                    intentUrl.setDataAndType(uri, "application/pdf")
+                    intentUrl.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    requireContext().startActivity(intentUrl)
+                } catch (e: ActivityNotFoundException) {
+                    Toast.makeText(
+                        requireActivity(),
+                        "Unknown Error Occured",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            },
+            { view, pos, dockItem ->
+                //PDF CLICKED OR NOT
+                if (flagForSelection == 0) {
+                    Log.d(TAG_OPEN, dockItem.toString())
+                    try {
+                        val path = dockItem!!.imageUri.path
+                        val file = File(path)
+                        val uri = FileProvider.getUriForFile(
+                            requireContext(),
+                            "com.pratiksahu.android.fileprovider",
+                            file
+                        )
+                        val intentUrl = Intent(Intent.ACTION_VIEW)
+                        intentUrl.setDataAndType(uri, "application/pdf")
+                        intentUrl.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        requireContext().startActivity(intentUrl)
+                    } catch (e: ActivityNotFoundException) {
+                        Toast.makeText(
+                            requireActivity(),
+                            "No PDF Viewer Installed",
+                            Toast.LENGTH_LONG
+                        )
+                            .show()
                     }
                 }
+                //PDF CLICKED FOR CHECKBOX ACTION OR NOT
+                if (flagForSelection == 1) {
+                    if (!selectedItems.contains(pos)) {
+                        selectedItems.add(pos)
+                        if (!selectedItemsPdf.contains(dockItem!!.imageUri)) {
+                            selectedItemsPdf.add(dockItem.imageUri)
+                        }
+                    } else {
+                        if (selectedItems.contains(pos))
+                            selectedItems.remove(pos)
+                        if (selectedItemsPdf.contains(dockItem!!.imageUri))
+                            selectedItemsPdf.remove(dockItem.imageUri)
+                    }
+                    importedPdfsAdapter?.setSelectedItems(selectedItems)
+                }
+
             },
             { item, pos, isChecked ->
                 //Item Checkbox click invoke

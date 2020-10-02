@@ -10,6 +10,7 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/pdfViewItemLayout"
         android:layout_width="match_parent"
         android:layout_height="100sp">
 
@@ -24,40 +25,37 @@
             app:layout_constraintTop_toTopOf="@+id/guideline6"
             app:layout_constraintVertical_bias="0.4">
 
-            <ImageView
-                android:id="@+id/morePdfButton"
-                android:layout_width="55sp"
-                android:layout_height="55sp"
-                android:layout_marginStart="12dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.511"
-                app:srcCompat="@drawable/ic_button_pdf" />
-
-            <TextView
-                android:id="@+id/fileNameTextView"
-                android:layout_width="250sp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:maxLines="2"
-                android:singleLine="false"
-                android:text="@{docs.imageName}"
-                app:layout_constraintStart_toEndOf="@+id/morePdfButton"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <TextView
                 android:id="@+id/fileSizeTextView"
                 android:layout_width="100sp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="4dp"
                 android:singleLine="true"
                 android:text="@{docs.imageSize}"
                 app:layout_constraintStart_toEndOf="@+id/morePdfButton"
                 app:layout_constraintTop_toBottomOf="@+id/fileNameTextView" />
 
+            <ImageView
+                android:id="@+id/morePdfButton"
+                android:layout_width="55sp"
+                android:layout_height="55sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_button_pdf" />
+
+            <TextView
+                android:id="@+id/fileNameTextView"
+                android:layout_width="250sp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="12dp"
+                android:maxLines="2"
+                android:singleLine="false"
+                android:text="@{docs.imageName}"
+                app:layout_constraintStart_toEndOf="@+id/morePdfButton"
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <CheckBox

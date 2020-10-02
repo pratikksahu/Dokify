@@ -14,7 +14,8 @@ import kotlinx.android.synthetic.main.imported_docks_pdf_item.view.*
 
 class ImportedPdfsAdapter(
     items: List<DocInfo>,
-    private val itemClick: (view: View, position: Int, dockItem: DocInfo?) -> Unit,
+    private val itemShareClick: (view: View, position: Int, dockItem: DocInfo?) -> Unit,
+    private val itemOpenClick: (view: View, position: Int, dockItem: DocInfo?) -> Unit,
     private val itemCheckBoxClick: (dockItem: DocInfo?, position: Int, isChecked: Boolean) -> Unit,
     private val itemLongClick: (view: View, position: Int, dockItem: DocInfo?) -> Unit
 ) :
@@ -82,8 +83,17 @@ class ImportedPdfsAdapter(
         RecyclerView.ViewHolder(binding.root), View.OnClickListener, View.OnLongClickListener {
 
         override fun onClick(v: View?) {
-            v?.let {
-                itemClick.invoke(v, adapterPosition, items[adapterPosition])
+            when (v) {
+                binding.longPressArea -> itemOpenClick.invoke(
+                    v,
+                    adapterPosition,
+                    items[adapterPosition]
+                )
+                binding.shareButton -> itemShareClick.invoke(
+                    v,
+                    adapterPosition,
+                    items[adapterPosition]
+                )
             }
         }
 
