@@ -18,6 +18,9 @@
         <action
             android:id="@+id/action_landingPage_to_convert_to_pdf_dialog"
             app:destination="@id/convert_to_pdf_dialog" />
+        <action
+            android:id="@+id/action_landingPage_to_delete_confirmation_dialog"
+            app:destination="@id/delete_confirmation_dialog" />
     </fragment>
     <dialog
         android:id="@+id/add_files_popup"
@@ -34,4 +37,9 @@
         android:name="com.pratiksahu.dokify.ui.dialogs.convert_to_pdf_dialog"
         android:label="convert_to_pdf_dialog"
         tools:layout="@layout/convert_to_pdf_dialog" />
+    <dialog
+        android:id="@+id/delete_confirmation_dialog"
+        android:name="com.pratiksahu.dokify.ui.dialogs.delete_confirmation_dialog"
+        android:label="delete_confirmation_dialog"
+        tools:layout="@layout/delete_confirmation_dialog" />
 </navigation>

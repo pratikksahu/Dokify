@@ -1,5 +1,6 @@
 package com.pratiksahu.dokify.ui.viewPagerHome.pdfPager
 
+import android.net.Uri
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LifecycleObserver
@@ -29,11 +30,20 @@ class PdfViewPagerFragmentViewModel @ViewModelInject constructor() : ViewModel()
     private val _pdfInFolder = MutableLiveData<ArrayList<DocInfo>>()
     val pdfInFolder: LiveData<ArrayList<DocInfo>> = _pdfInFolder
 
-    private val _pdfToOpen = MutableLiveData<DocInfo>()
-    val pdfToOpen: LiveData<DocInfo> = _pdfToOpen
+    private val _pdfDelete = MutableLiveData<Boolean>()
+    val pdfDelete: LiveData<Boolean> = _pdfDelete
 
-    fun setPdfToOpen(item: DocInfo) {
-        _pdfToOpen.value = item
+    private val _pdfToDelete = MutableLiveData<ArrayList<Uri>>()
+    val pdfToDelete: LiveData<ArrayList<Uri>> = _pdfToDelete
+
+
+    fun setPdfDelete(valueA: Boolean, valueB: ArrayList<Uri>?) {
+        _pdfDelete.value = valueA
+        if (valueA) {
+            _pdfToDelete.value = valueB
+        } else {
+            _pdfToDelete.value?.clear()
+        }
     }
 
     fun setPdf(list: ArrayList<DocInfo>) {

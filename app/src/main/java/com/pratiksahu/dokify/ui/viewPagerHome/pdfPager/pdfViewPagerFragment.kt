@@ -72,7 +72,8 @@ class PdfViewPagerFragment : Fragment(R.layout.common_view_pager) {
         setupSelectAllCheckBoxListener()
         setupShareMultiple()
         setupCancelButtonListener()
-        setupDeleteImageButtonListener()
+        setupDeletePdfButtonListener()
+        setupDeleteDialogResponseListener()
         setupObservers()
         initAdapter()
     }
@@ -217,25 +218,37 @@ class PdfViewPagerFragment : Fragment(R.layout.common_view_pager) {
         }
     }
 
-    fun setupDeleteImageButtonListener() {
+    var deleteFlag = 0
+
+    fun setupDeletePdfButtonListener() {
         deleteFileButton.setOnClickListener {
-            if (selectedItemsPdf.size > 0)
-                selectedItemsPdf.forEach {
-                    File(it.path).delete()
-                        .let { result ->
-                            Log.d(TAG_DELETE, it.path + " <-- $result")
-                        }
-                }
-            importedPdfsAdapter?.items = emptyList()
-            flagForSelection = 0
-            hideActionsTabView()
-            selectAllCheckBox.isChecked = false
-            selectedItemsPdf.clear()
-            selectedItems.clear()
-            importedPdfsAdapter?.setIsLongClicked(false)
-            importedPdfsAdapter?.setSelectedItems(selectedItems)
-            pdfViewPagerFragmentViewModel.initPdf()
+            if (selectedItemsPdf.size > 0) {
+                deleteFlag = 1
+                pdfViewPagerFragmentViewModel.setPdfDelete(true, selectedItemsPdf)
+                navController.navigate(R.id.action_landingPage_to_delete_confirmation_dialog)
+            } else
+                ToastMessage("No items to delete")
+
         }
+    }
+
+    fun setupDeleteDialogResponseListener() {
+        pdfViewPagerFragmentViewModel.pdfDelete.observe(viewLifecycleOwner, Observer {
+            if (!it) {
+                if (deleteFlag == 1) {
+                    importedPdfsAdapter?.items = emptyList()
+                    flagForSelection = 0
+                    hideActionsTabView()
+                    selectAllCheckBox.isChecked = false
+                    selectedItemsPdf.clear()
+                    selectedItems.clear()
+                    importedPdfsAdapter?.setIsLongClicked(false)
+                    importedPdfsAdapter?.setSelectedItems(selectedItems)
+                    pdfViewPagerFragmentViewModel.initPdf()
+                    deleteFlag == 0
+                }
+            }
+        })
     }
 
     fun setupSelectAllCheckBoxListener() {
@@ -318,6 +331,10 @@ class PdfViewPagerFragment : Fragment(R.layout.common_view_pager) {
         guideText.visibility = GONE
         rearrangeButton.visibility = GONE
         moreOptions.visibility = GONE
+    }
+
+    fun ToastMessage(msg: String) {
+        Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
     }
 
 }

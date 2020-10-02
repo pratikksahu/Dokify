@@ -127,6 +127,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
         setupRearrangeButton()
         setupmoreOptionsListener()
         setupDeleteImageButtonListener()
+        setupDeleteDialogListener()
         initDocsAdapter()
     }
 
@@ -323,26 +324,39 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
         }
     }
 
+    var deleteFlag = 0
+
     fun setupDeleteImageButtonListener() {
         deleteFileButton.setOnClickListener {
-            if (selectedItemsImage.size > 0)
-                selectedItemsImage.forEach {
-                    File(it.path).delete()
-                        .let { result ->
-                            Log.d(TAG_DELETE, it.path + " <-- $result")
-                        }
-                }
-            flagForSelection = 0
-            hideActionsTabView()
-            selectAllCheckBox.isChecked = false
-            selectedItemsImage.clear()
-            selectedItems.clear()
-            importedImagesAdapter?.setIsLongClicked(false)
-            importedImagesAdapter?.setSelectedItems(selectedItems)
-            imageList.clear()
-            imagePagerViewModel.initImages()
-            importedImagesAdapter?.items = imageList
+            if (selectedItemsImage.size > 0) {
+                deleteFlag = 1
+                imagePagerViewModel.setImageDelete(true, selectedItemsImage)
+                navController.navigate(R.id.action_landingPage_to_delete_confirmation_dialog)
+            } else
+                ToastMessage("No items to delete")
+
         }
+    }
+
+
+    fun setupDeleteDialogListener() {
+        imagePagerViewModel.imageDelete.observe(viewLifecycleOwner, Observer {
+            if (!it) {
+                if (deleteFlag == 1) {
+                    flagForSelection = 0
+                    hideActionsTabView()
+                    selectAllCheckBox.isChecked = false
+                    selectedItemsImage.clear()
+                    selectedItems.clear()
+                    importedImagesAdapter?.setIsLongClicked(false)
+                    importedImagesAdapter?.setSelectedItems(selectedItems)
+                    imageList.clear()
+                    imagePagerViewModel.initImages()
+                    importedImagesAdapter?.items = imageList
+                    deleteFlag = 0
+                }
+            }
+        })
     }
 
     fun setupCancelButtonListener() {
