@@ -7,6 +7,7 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -80,6 +81,7 @@ class add_files_popup : DialogFragment() {
         registerForActivityResult(ActivityResultContracts.GetMultipleContents()) {
             if (it.size != 0)
                 it?.also {
+
                     Log.d(TAG_IMPORT_GALLERY, "Number of items : ${it.size}")
                     CoroutineScope(IO).launch {
                         CoroutineScope(Main).launch {
@@ -87,15 +89,25 @@ class add_files_popup : DialogFragment() {
                             imagePagerViewModel.isLoading(true)
                         }
                         for (i in it.indices) {
+                            var bitMap: Bitmap
                             val timeStamp =
                                 i.toString() + "_" + SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
                             createFile(timeStamp, "JPEG", ".jpeg")
-                            val bitMap = ImageDecoder.decodeBitmap(
-                                ImageDecoder.createSource(
+                            if (Build.VERSION.SDK_INT >= 29) {
+                                bitMap = ImageDecoder.decodeBitmap(
+                                    ImageDecoder.createSource(
+                                        requireContext().contentResolver,
+                                        it[i]
+                                    )
+                                )
+                            } else {
+                                // Use older version
+                                bitMap = MediaStore.Images.Media.getBitmap(
                                     requireContext().contentResolver,
                                     it[i]
                                 )
-                            )
+                            }
+
                             val opstream = FileOutputStream(currentPhotoPath)
 
                             //creating byteoutputstream

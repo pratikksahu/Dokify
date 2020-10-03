@@ -70,7 +70,7 @@
                 <!--                        android:id="@+id/selectAllCheckBox"-->
                 <!--                        android:layout_width="wrap_content"-->
                 <!--                        android:layout_height="wrap_content"-->
-                <!--                        android:layout_marginStart="24dp"-->
+                <!--                        android:layout_marginStart="24sp"-->
                 <!--                        android:text="Select"-->
                 <!--                        app:layout_constraintBottom_toBottomOf="parent"-->
                 <!--                        app:layout_constraintStart_toStartOf="parent"-->
@@ -80,7 +80,7 @@
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/recentWithHistory"
                     android:layout_width="match_parent"
-                    android:layout_height="685dp"
+                    android:layout_height="685sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

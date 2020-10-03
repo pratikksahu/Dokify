@@ -44,10 +44,10 @@
                 android:id="@+id/fileNameTextBox"
                 android:layout_width="300sp"
                 android:layout_height="40sp"
-                android:layout_marginTop="28dp"
+                android:layout_marginTop="28sp"
                 android:layout_weight="2"
                 android:background="@drawable/edit_text_background"
-                android:padding="8dp"
+                android:padding="8sp"
                 android:singleLine="true"
                 android:textColor="#000000"
                 android:textColorHint="#8A8080"
@@ -60,7 +60,7 @@
                 android:id="@+id/colorOrNot"
                 android:layout_width="150sp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="8sp"
                 android:maxLines="2"
                 android:text="Black And White PDF"
                 android:textColor="#000000"
@@ -73,7 +73,7 @@
                 android:id="@+id/makePDF"
                 android:layout_width="100sp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="12sp"
                 android:background="@drawable/button_background"
                 android:text="Button"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -85,28 +85,28 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintGuide_begin="25dp" />
+                app:layout_constraintGuide_begin="25sp" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintGuide_begin="224dp" />
+                app:layout_constraintGuide_begin="224sp" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_begin="31dp" />
+                app:layout_constraintGuide_begin="31sp" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_begin="372dp" />
+                app:layout_constraintGuide_begin="372sp" />
 
             <TextView
                 android:id="@+id/textView"
