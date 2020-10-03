@@ -73,12 +73,16 @@ class convert_to_pdf_dialog : DialogFragment() {
     }
 
     fun setupObservers() {
+        imagePagerViewModel.initTempImages()
 
         imagePagerViewModel.imageToConvert.observe(viewLifecycleOwner, Observer {
             imagesToConvert.addAll(it)
+            println("TESTING COLOR $imagesToConvert")
         })
         imagePagerViewModel.tempImageToConvert.observe(viewLifecycleOwner, Observer {
+            tempImagesToConvert.clear()
             tempImagesToConvert.addAll(it)
+            println("TESTING BW IMG $tempImagesToConvert")
         })
     }
 
@@ -95,7 +99,6 @@ class convert_to_pdf_dialog : DialogFragment() {
             val notify = CoroutineScope(Main).launch {
                 makePDF.text = "Please Wait"
                 imagePagerViewModel.setIsConverted(false)
-                imagePagerViewModel.initTempImages()
                 delay(15)
             }
             notify.invokeOnCompletion {

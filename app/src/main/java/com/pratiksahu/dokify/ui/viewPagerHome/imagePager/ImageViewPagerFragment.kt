@@ -299,9 +299,15 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
                     }
                 }
                 val task = CoroutineScope(IO).launch {
-                    for (i in selectedItemsImage.indices) {
-                        createTempFile("_${i}", "TEMP", ".jpg")
-                        blackAndWhite(selectedItemsImage[i])
+                    if (selectedItemsImage.size == 1) {
+                        println("TESTING BW CONVERT $selectedItemsImage")
+                        createTempFile("_singlePhoto", "TEMP", ".jpg")
+                        blackAndWhite(selectedItemsImage[0])
+                    } else {
+                        for (i in selectedItemsImage.indices) {
+                            createTempFile("_${i}", "TEMP", ".jpg")
+                            blackAndWhite(selectedItemsImage[i])
+                        }
                     }
                 }
                 deleteTask.invokeOnCompletion {
@@ -345,6 +351,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
     fun setupDeleteImageButtonListener() {
         deleteFileButton.setOnClickListener {
             if (selectedItemsImage.size > 0) {
+                mainActivityViewModel.setAddFilesButtonShow(false)
                 deleteFlag = 1
                 imagePagerViewModel.setImageDelete(true, selectedItemsImage)
                 navController.navigate(R.id.action_landingPage_to_delete_confirmation_dialog)

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.NavHostFragment
+import com.pratiksahu.dokify.MainActivityViewModel
 import com.pratiksahu.dokify.databinding.DeleteConfirmationDialogBinding
 import com.pratiksahu.dokify.ui.viewPagerHome.imagePager.ImagePagerViewModel
 import com.pratiksahu.dokify.ui.viewPagerHome.pdfPager.PdfViewPagerFragmentViewModel
@@ -27,6 +28,9 @@ class delete_confirmation_dialog : DialogFragment() {
 
     @Inject
     lateinit var pdfViewPagerFragmentViewModel: PdfViewPagerFragmentViewModel
+
+    @Inject
+    lateinit var mainActivityViewModel: MainActivityViewModel
 
     private val navController by lazy { NavHostFragment.findNavController(this) }
 
@@ -88,11 +92,13 @@ class delete_confirmation_dialog : DialogFragment() {
                 }
                 pdfViewPagerFragmentViewModel.setPdfDelete(false, null)
             }
+            mainActivityViewModel.setAddFilesButtonShow(true)
             navController.popBackStack()
         }
         noButton.setOnClickListener {
             imagePagerViewModel.setImageDelete(false, null)
             imagePagerViewModel.setImageDelete(false, null)
+            mainActivityViewModel.setAddFilesButtonShow(true)
             navController.popBackStack()
         }
     }

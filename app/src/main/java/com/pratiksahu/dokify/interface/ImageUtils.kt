@@ -23,6 +23,7 @@ import java.io.IOException
 class ImageUtils {
     val TAG_IMAGE_RESOLUTION = "IMAGE_RESOLUTION"
     fun createPdf(imageList: ArrayList<Uri>, filePath: String): Boolean {
+        println("TESTING LIST TO CONVERT ${imageList}")
         val list = imageList
         if (list.isEmpty())
             return false
@@ -65,7 +66,6 @@ class ImageUtils {
             e.printStackTrace()
             return false
         }
-
         //For rest of page if items greater than 1
         if (list.isNotEmpty()) {
             try {
