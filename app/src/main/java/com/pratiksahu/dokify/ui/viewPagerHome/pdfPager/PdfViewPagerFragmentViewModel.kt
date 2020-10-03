@@ -21,6 +21,8 @@ import kotlin.collections.ArrayList
 class PdfViewPagerFragmentViewModel @ViewModelInject constructor() : ViewModel(),
     LifecycleObserver {
 
+    lateinit var pdfPath: String
+
     private val _loading = MutableLiveData<Boolean>()
     val loading: LiveData<Boolean> = _loading
 
@@ -55,8 +57,8 @@ class PdfViewPagerFragmentViewModel @ViewModelInject constructor() : ViewModel()
             CoroutineScope(Dispatchers.Main).launch {
                 _loading.value = true
             }
-            val path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/PDF"
-            val directory = File(path)
+//            val path = R.string.pdfOutputPath.toString()
+            val directory = File(pdfPath)
             if (directory.exists()) {
                 val files: Array<File> = directory.listFiles()
                 if (files.size > 0) {

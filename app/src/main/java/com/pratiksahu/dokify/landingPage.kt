@@ -65,7 +65,7 @@ class landingPage : Fragment(R.layout.landing_page_fragment) {
 
     fun createTempDirectory() {
         //Temporary directory
-        val path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/TMP"
+        val path = getString(R.string.tempOutputPath)
         val directory = File(path)
         if (directory.exists())
             directory.delete()
@@ -74,7 +74,7 @@ class landingPage : Fragment(R.layout.landing_page_fragment) {
 
     fun createPdfDirectroy() {
         //PDF directory
-        val path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/PDF"
+        val path = getString(R.string.pdfOutputPath)
         val directory = File(path)
         if (directory.exists())
             directory.delete()

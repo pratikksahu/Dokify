@@ -1,6 +1,7 @@
 package com.pratiksahu.dokify.ui.viewPagerHome.imagePager
 
 import android.net.Uri
+import android.util.Log
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LifecycleObserver
@@ -19,6 +20,11 @@ import kotlin.collections.ArrayList
 
 class ImagePagerViewModel @ViewModelInject constructor() : ViewModel(), LifecycleObserver {
 
+    val TAG_IMAGE_LOADED = "IMAGES_FOUND"
+    val TAG_TEMPIMAGE_LOADED = "IMAGES_TEMP_FOUND"
+
+    lateinit var tempPath: String
+    lateinit var picturePath: String
 
     private val _newImage = MutableLiveData<ArrayList<DocInfo>>()
     val imagesInFolder: LiveData<ArrayList<DocInfo>> = _newImage
@@ -85,10 +91,12 @@ class ImagePagerViewModel @ViewModelInject constructor() : ViewModel(), Lifecycl
             CoroutineScope(Main).launch {
                 _loading.value = true
             }
-            val path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/TMP"
-            val directory = File(path)
+//            val path = R.string.tempOutputPath
+
+            val directory = File(tempPath)
             if (directory.exists()) {
                 val files: Array<File> = directory.listFiles()
+                Log.d(TAG_TEMPIMAGE_LOADED, files.toString())
                 if (files.size > 0) {
                     Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed())
                     val tempDocInfoList = ArrayList<Uri>()
@@ -114,10 +122,11 @@ class ImagePagerViewModel @ViewModelInject constructor() : ViewModel(), Lifecycl
             CoroutineScope(Main).launch {
                 _loading.value = true
             }
-            val path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/Pictures"
-            val directory = File(path)
+//            val path = R.string.imageOutputPath.toString()
+            val directory = File(picturePath)
             if (directory.exists()) {
                 val files: Array<File> = directory.listFiles()
+                Log.d(TAG_IMAGE_LOADED, files.toString())
                 if (files.size > 0) {
                     Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed())
                     val tempDocInfoList = ArrayList<DocInfo>()

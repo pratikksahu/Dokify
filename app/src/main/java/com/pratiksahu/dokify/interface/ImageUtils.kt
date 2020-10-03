@@ -23,7 +23,6 @@ import java.io.IOException
 class ImageUtils {
     val TAG_IMAGE_RESOLUTION = "IMAGE_RESOLUTION"
     fun createPdf(imageList: ArrayList<Uri>, filePath: String): Boolean {
-        println("TESTING LIST TO CONVERT ${imageList}")
         val list = imageList
         if (list.isEmpty())
             return false
@@ -74,7 +73,6 @@ class ImageUtils {
                     width = bm.width.toFloat()
                     height = bm.height.toFloat()
                     val rectangleImage = Rectangle(width, height)
-                    println("TESTING $rectangleImage")
                     document.add(AreaBreak(PageSize(rectangleImage)))
                     document.setMargins(2F, 2F, 2F, 2F)
 

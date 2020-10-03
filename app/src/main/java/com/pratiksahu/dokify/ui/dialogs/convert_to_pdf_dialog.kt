@@ -13,6 +13,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.NavHostFragment
+import com.pratiksahu.dokify.R
 import com.pratiksahu.dokify.databinding.ConvertToPdfDialogBinding
 import com.pratiksahu.dokify.ui.viewPagerHome.imagePager.ImagePagerViewModel
 import com.pratiksahu.dokify.ui.viewPagerHome.pdfPager.PdfViewPagerFragmentViewModel
@@ -76,13 +77,14 @@ class convert_to_pdf_dialog : DialogFragment() {
         imagePagerViewModel.initTempImages()
 
         imagePagerViewModel.imageToConvert.observe(viewLifecycleOwner, Observer {
+            imagesToConvert.clear()
             imagesToConvert.addAll(it)
-            println("TESTING COLOR $imagesToConvert")
+
         })
         imagePagerViewModel.tempImageToConvert.observe(viewLifecycleOwner, Observer {
             tempImagesToConvert.clear()
             tempImagesToConvert.addAll(it)
-            println("TESTING BW IMG $tempImagesToConvert")
+
         })
     }
 
@@ -153,7 +155,7 @@ class convert_to_pdf_dialog : DialogFragment() {
     fun createFile(fileName: String, prefix: String, suffix: String) {
 
         val name = prefix + fileName + suffix
-        File("/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/PDF/$name").apply {
+        File("${getString(R.string.pdfOutputPath)}$name").apply {
             currentPhotoPath = absolutePath
         }.createNewFile().also {
             photoURI = FileProvider.getUriForFile(

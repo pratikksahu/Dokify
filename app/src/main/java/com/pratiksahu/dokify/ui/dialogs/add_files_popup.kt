@@ -249,7 +249,7 @@ class add_files_popup : DialogFragment() {
 
     fun createFile(fileName: String, prefix: String, suffix: String) {
         val name = prefix + fileName + suffix
-        val path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/Pictures/"
+        val path = getString(R.string.imageOutputPath)
         File(path).mkdir()
         File("${path}${name}").apply {
             currentPhotoPath = absolutePath

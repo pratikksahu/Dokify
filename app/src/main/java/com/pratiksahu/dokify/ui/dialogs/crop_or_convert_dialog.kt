@@ -47,7 +47,6 @@ class crop_or_convert_dialog : DialogFragment() {
     lateinit var currentPhotoPath: String
     lateinit var photoUri: Uri
 
-    private val imageList = ArrayList<DocInfo>()
 
     private var deleteOriginal: Boolean = true
 
@@ -84,9 +83,6 @@ class crop_or_convert_dialog : DialogFragment() {
     private fun initObservers() {
         imagePagerViewModel.selectedImage.observe(this, Observer {
             selectedImage = it
-        })
-        imagePagerViewModel.imagesInFolder.observe(viewLifecycleOwner, Observer {
-            imageList.addAll(it)
         })
     }
 
@@ -174,6 +170,6 @@ class crop_or_convert_dialog : DialogFragment() {
     }
 
     fun ToastMessage(msg: String) {
-        Toast.makeText(requireContext(), "Testing : ${msg}", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
     }
 }

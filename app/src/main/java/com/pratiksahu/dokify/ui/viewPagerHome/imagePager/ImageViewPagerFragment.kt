@@ -23,6 +23,7 @@ import com.pratiksahu.dokify.`interface`.ToBlackWhite
 import com.pratiksahu.dokify.databinding.CommonViewPagerBinding
 import com.pratiksahu.dokify.model.DocInfo
 import com.pratiksahu.dokify.ui.recyclerViewAdapter.ImportedImagesAdapter
+import com.pratiksahu.dokify.ui.viewPagerHome.pdfPager.PdfViewPagerFragmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.common_view_pager.*
 import kotlinx.coroutines.CoroutineScope
@@ -45,6 +46,9 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
 
     @Inject
     lateinit var imagePagerViewModel: ImagePagerViewModel
+
+    @Inject
+    lateinit var pdfViewPagerFragmentViewModel: PdfViewPagerFragmentViewModel
 
     @Inject
     lateinit var mainActivityViewModel: MainActivityViewModel
@@ -114,7 +118,6 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         createPdfDirectroy()
-
         actionsTab.layoutTransition.setAnimateParentHierarchy(false)
         progressCircle = CircularProgressDrawable(requireContext())
         progressCircle.strokeWidth = 5f
@@ -137,9 +140,10 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
     }
 
     fun createTempDirectory() {
+
         //Temporary directory
-        var path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/TMP"
-        var directory = File(path)
+        val path = getString(R.string.tempOutputPath)
+        val directory = File(path)
         if (directory.exists())
             directory.delete()
         directory.mkdir()
@@ -147,7 +151,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
 
     fun createPdfDirectroy() {
         //PDF directory
-        val path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/PDF"
+        val path = getString(R.string.pdfOutputPath)
         val directory = File(path)
         if (directory.exists())
             directory.delete()
@@ -156,6 +160,9 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
 
 
     fun setObservables() {
+        pdfViewPagerFragmentViewModel.pdfPath = getString(R.string.pdfOutputPath)
+        imagePagerViewModel.tempPath = getString(R.string.tempOutputPath)
+        imagePagerViewModel.picturePath = getString(R.string.imageOutputPath)
         imagePagerViewModel.setIsConverted((false))
         imagePagerViewModel.isConverted.observe(viewLifecycleOwner, Observer {
             if (it)
@@ -223,10 +230,25 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
                                 selectedItemsImage.add(dockItem.imageUri)
                             }
                         } else {
-                            if (selectedItems.contains(pos))
+                            if (selectAllCheckBox.isChecked) {
+                                val tempSelectedItems = ArrayList<Int>()
+                                val tempSelectedItemsImage = ArrayList<Uri>()
                                 selectedItems.remove(pos)
-                            if (selectedItemsImage.contains(dockItem!!.imageUri))
-                                selectedItemsImage.remove(dockItem.imageUri)
+                                selectedItemsImage.remove(dockItem!!.imageUri)
+                                tempSelectedItems.addAll(selectedItems)
+                                tempSelectedItemsImage.addAll(selectedItemsImage)
+                                selectAllCheckBox.isChecked = false
+                                selectedItems.clear()
+                                selectedItemsImage.clear()
+                                selectedItemsImage.addAll(tempSelectedItemsImage)
+                                selectedItems.addAll(tempSelectedItems)
+                                importedImagesAdapter?.setSelectedItems(selectedItems)
+                            } else {
+                                if (selectedItems.contains(pos))
+                                    selectedItems.remove(pos)
+                                if (selectedItemsImage.contains(dockItem!!.imageUri))
+                                    selectedItemsImage.remove(dockItem.imageUri)
+                            }
                         }
                         importedImagesAdapter?.setSelectedItems(selectedItems)
                     }
@@ -237,12 +259,27 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
                         selectedItems.add(pos)
                         selectedItemsImage.add(item!!.imageUri)
                     } else {
-                        if (selectAllCheckBox.isChecked)
-                            selectAllCheckBox.isChecked = false
-                        if (selectedItems.contains(pos))
+                        if (selectAllCheckBox.isChecked) {
+                            val tempSelectedItems = ArrayList<Int>()
+                            val tempSelectedItemsImage = ArrayList<Uri>()
                             selectedItems.remove(pos)
-                        if (selectedItemsImage.contains(item!!.imageUri))
-                            selectedItemsImage.remove(item.imageUri)
+                            selectedItemsImage.remove(item!!.imageUri)
+                            tempSelectedItems.addAll(selectedItems)
+                            tempSelectedItemsImage.addAll(selectedItemsImage)
+                            selectAllCheckBox.isChecked = false
+
+                            selectedItemsImage.addAll(tempSelectedItemsImage)
+                            selectedItems.addAll(tempSelectedItems)
+                            importedImagesAdapter?.setSelectedItems(selectedItems)
+
+                        } else {
+                            if (selectAllCheckBox.isChecked)
+                                selectAllCheckBox.isChecked = false
+                            if (selectedItems.contains(pos))
+                                selectedItems.remove(pos)
+                            if (selectedItemsImage.contains(item!!.imageUri))
+                                selectedItemsImage.remove(item.imageUri)
+                        }
                     }
                     importedImagesAdapter?.setSelectedItems(selectedItems)
                 }
@@ -286,7 +323,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
 
                 }
                 val deleteTask = CoroutineScope(IO).launch {
-                    val path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/TMP"
+                    val path = getString(R.string.tempOutputPath)
                     val directory = File(path)
                     if (!directory.exists())
                         directory.mkdir()
@@ -300,7 +337,6 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
                 }
                 val task = CoroutineScope(IO).launch {
                     if (selectedItemsImage.size == 1) {
-                        println("TESTING BW CONVERT $selectedItemsImage")
                         createTempFile("_singlePhoto", "TEMP", ".jpg")
                         blackAndWhite(selectedItemsImage[0])
                     } else {
@@ -387,7 +423,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
         cancelSelectionButton.setOnClickListener {
             mainActivityViewModel.setAddFilesButtonShow(true)
             CoroutineScope(IO).launch {
-                val path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/TMP"
+                val path = getString(R.string.tempOutputPath)
                 val directory = File(path)
                 if (!directory.exists())
                     directory.mkdir()
@@ -418,6 +454,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
             if (isChecked) {
                 selectAllCheckBox.text = "Unselect All"
                 //Storing Uri
+                selectedItemsImage.clear()
                 imageList.forEach {
                     selectedItemsImage.add(it.imageUri)
                 }
@@ -434,7 +471,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
                 importedImagesAdapter?.setSelectedItems(selectedItems)
             }
         }
-        selectAllCheckBox.isChecked = false
+
     }
 
     fun hideActionsTabView() {
@@ -467,7 +504,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
 
     fun createTempFile(fileName: String, prefix: String, suffix: String) {
         val name = prefix + fileName + suffix
-        val path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/TMP/"
+        val path = getString(R.string.tempOutputPath)
         File(path).mkdir()
         File("$path$name").apply {
             currentPhotoPath = absolutePath
