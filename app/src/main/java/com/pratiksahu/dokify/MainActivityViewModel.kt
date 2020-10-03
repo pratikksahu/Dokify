@@ -7,9 +7,10 @@ import androidx.lifecycle.ViewModel
 
 class MainActivityViewModel @ViewModelInject constructor() : ViewModel() {
 
-    private val LiveList = MutableLiveData<ArrayList<String>>()
-    val LiveData: LiveData<ArrayList<String>>? = LiveList
-    fun initList() {
-        LiveList.value = arrayListOf("a", "b", "c")
+    private val _addFilesShow = MutableLiveData<Boolean>()
+    var addFilesShow: LiveData<Boolean> = _addFilesShow
+
+    fun setAddFilesButtonShow(value: Boolean) {
+        _addFilesShow.value = value
     }
 }

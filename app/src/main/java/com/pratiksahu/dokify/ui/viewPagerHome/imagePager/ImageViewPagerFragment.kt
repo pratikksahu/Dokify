@@ -9,6 +9,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
@@ -16,6 +17,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.*
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
+import com.pratiksahu.dokify.MainActivityViewModel
 import com.pratiksahu.dokify.R
 import com.pratiksahu.dokify.`interface`.ToBlackWhite
 import com.pratiksahu.dokify.databinding.CommonViewPagerBinding
@@ -43,6 +45,9 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
 
     @Inject
     lateinit var imagePagerViewModel: ImagePagerViewModel
+
+    @Inject
+    lateinit var mainActivityViewModel: MainActivityViewModel
 
     lateinit var binding: CommonViewPagerBinding
 
@@ -205,7 +210,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
 
                     //IMAGE CLICKED OR NOT
                     if (flagForSelection == 0) {
-                        if (dockItem != null) {
+                        if (dockItem != null && flagForRearrange == 0) {
                             imagePagerViewModel.setSelectedImage(dockItem)
                             navController.navigate(R.id.action_landingPage_to_crop_or_convert_dialog)
                         }
@@ -256,6 +261,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
         moreOptions.setOnClickListener {
             if (imageList.isNotEmpty()) {
                 helper.attachToRecyclerView(null)
+                mainActivityViewModel.setAddFilesButtonShow(false)
                 showActionsTabView()
                 flagForSelection = 1
                 importedImagesAdapter?.setIsLongClicked(true)
@@ -265,56 +271,66 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
 
     fun pdfButtonListener() {
         pdfDialog.setOnClickListener {
-            imagePagerViewModel.setImagesToConvert(selectedItemsImage)
-            CoroutineScope(Main).launch {
-                createTempDirectory()
-                importedocks.visibility = GONE
-                waitMessage.text = "Please Wait"
-                loadingData.visibility = VISIBLE
-                waitMessage.visibility = VISIBLE
-            }
-            val deleteTask = CoroutineScope(IO).launch {
-                val path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/TMP"
-                val directory = File(path)
-                if (!directory.exists())
-                    directory.mkdir()
-                else {
-                    val del = directory.listFiles()
-                    if (del != null)
-                        del.forEach {
-                            File(it.path).delete()
-                        }
+            if (selectedItemsImage.size > 0) {
+                imagePagerViewModel.setImagesToConvert(selectedItemsImage)
+                CoroutineScope(Main).launch {
+                    requireActivity().window.setFlags(
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                    )
+                    createTempDirectory()
+                    importedocks.visibility = GONE
+                    waitMessage.text = "Please Wait"
+                    loadingData.visibility = VISIBLE
+                    waitMessage.visibility = VISIBLE
+
                 }
-            }
-            val task = CoroutineScope(IO).launch {
-                for (i in selectedItemsImage.indices) {
-                    createTempFile("_${i}", "TEMP", ".jpg")
-                    blackAndWhite(selectedItemsImage[i])
-                }
-            }
-            deleteTask.invokeOnCompletion {
-                task.invokeOnCompletion {
-                    CoroutineScope(Main).launch {
-                        importedocks.visibility = VISIBLE
-                        waitMessage.visibility = GONE
-                        loadingData.visibility = GONE
-                        navController.navigate(R.id.action_landingPage_to_convert_to_pdf_dialog)
+                val deleteTask = CoroutineScope(IO).launch {
+                    val path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/TMP"
+                    val directory = File(path)
+                    if (!directory.exists())
+                        directory.mkdir()
+                    else {
+                        val del = directory.listFiles()
+                        if (del != null)
+                            del.forEach {
+                                File(it.path).delete()
+                            }
                     }
                 }
-            }
-
+                val task = CoroutineScope(IO).launch {
+                    for (i in selectedItemsImage.indices) {
+                        createTempFile("_${i}", "TEMP", ".jpg")
+                        blackAndWhite(selectedItemsImage[i])
+                    }
+                }
+                deleteTask.invokeOnCompletion {
+                    task.invokeOnCompletion {
+                        CoroutineScope(Main).launch {
+                            importedocks.visibility = VISIBLE
+                            waitMessage.visibility = GONE
+                            loadingData.visibility = GONE
+                            requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+                            navController.navigate(R.id.action_landingPage_to_convert_to_pdf_dialog)
+                        }
+                    }
+                }
+            } else
+                ToastMessage("Select atleast one image")
         }
     }
 
     fun setupRearrangeButton() {
         rearrangeButton.setOnClickListener {
             if (flagForRearrange == 0) {
+                mainActivityViewModel.setAddFilesButtonShow(false)
                 flagForRearrange = 1
                 rearrangeButton.text = "DONE"
                 importedocks.layoutManager = LinearLayoutManager(requireContext())
                 helper.attachToRecyclerView(importedocks)
                 moreOptions.visibility = GONE
             } else if (flagForRearrange == 1) {
+                mainActivityViewModel.setAddFilesButtonShow(true)
                 flagForRearrange = 0
                 rearrangeButton.text = "REARRANGE"
                 importedocks.layoutManager = GridLayoutManager(requireContext(), 2)
@@ -362,6 +378,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
     fun setupCancelButtonListener() {
         cancelSelectionButton.setOnClickListener(null)
         cancelSelectionButton.setOnClickListener {
+            mainActivityViewModel.setAddFilesButtonShow(true)
             CoroutineScope(IO).launch {
                 val path = "/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/TMP"
                 val directory = File(path)

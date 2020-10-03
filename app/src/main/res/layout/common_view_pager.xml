@@ -32,16 +32,18 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.47" />
 
+
             <CheckBox
                 android:id="@+id/selectAllCheckBox"
                 android:layout_width="100sp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
                 android:maxLines="2"
                 android:text="Select All"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.515" />
 
             <ImageView
                 android:id="@+id/pdfDialog"

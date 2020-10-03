@@ -32,7 +32,6 @@ import javax.inject.Inject
 class PdfViewPagerFragment : Fragment(R.layout.common_view_pager) {
 
     val TAG_PDF_LIST = "PDF LOADING"
-    val TAG_DELETE = "PDF DELETED"
     val TAG_SHARE = "PDF SHARED"
     val TAG_OPEN = "PDF OPEN"
 
@@ -109,6 +108,34 @@ class PdfViewPagerFragment : Fragment(R.layout.common_view_pager) {
         })
     }
 
+    fun setupShareMultiple() {
+        shareMultiple.setOnClickListener {
+            if (selectedItemsPdf.size > 0) {
+                val uriArrayList = ArrayList<Uri>()
+                selectedItemsPdf.forEach {
+                    val path = it.path
+                    val file = File(path)
+                    val uri = FileProvider.getUriForFile(
+                        requireContext(),
+                        "com.pratiksahu.android.fileprovider",
+                        file
+                    )
+                    uriArrayList.add(uri)
+                }
+                val multipleShareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
+                multipleShareIntent.type = "application/pdf"
+                multipleShareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriArrayList)
+                requireContext().startActivity(multipleShareIntent)
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "Please select atleast one image",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
     fun initAdapter() {
         importedPdfsAdapter = ImportedPdfsAdapter(
             pdfList,
@@ -122,8 +149,9 @@ class PdfViewPagerFragment : Fragment(R.layout.common_view_pager) {
                         "com.pratiksahu.android.fileprovider",
                         file
                     )
-                    val intentUrl = Intent(Intent.ACTION_SEND)
-                    intentUrl.setDataAndType(uri, "application/pdf")
+                    val intentUrl = Intent(Intent.ACTION_SEND_MULTIPLE)
+                    intentUrl.type = "application/pdf"
+                    intentUrl.putParcelableArrayListExtra(Intent.EXTRA_STREAM, arrayListOf(uri))
                     intentUrl.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     requireContext().startActivity(intentUrl)
                 } catch (e: ActivityNotFoundException) {
@@ -277,33 +305,6 @@ class PdfViewPagerFragment : Fragment(R.layout.common_view_pager) {
         selectAllCheckBox.isChecked = false
     }
 
-    fun setupShareMultiple() {
-        shareMultiple.setOnClickListener {
-            if (selectedItemsPdf.size > 0) {
-                val uriArrayList = ArrayList<Uri>()
-                selectedItemsPdf.forEach {
-                    val path = it.path
-                    val file = File(path)
-                    val uri = FileProvider.getUriForFile(
-                        requireContext(),
-                        "com.pratiksahu.android.fileprovider",
-                        file
-                    )
-                    uriArrayList.add(uri)
-                }
-                val multipleShareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
-                multipleShareIntent.type = "application/pdf"
-                multipleShareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriArrayList)
-                requireContext().startActivity(multipleShareIntent)
-            } else {
-                Toast.makeText(
-                    requireContext(),
-                    "Please select atleast one image",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        }
-    }
 
     fun hideActionsTabView() {
         //Hide buttons

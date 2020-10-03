@@ -20,6 +20,7 @@ import androidx.core.content.FileProvider
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.NavHostFragment
+import com.pratiksahu.dokify.MainActivityViewModel
 import com.pratiksahu.dokify.R
 import com.pratiksahu.dokify.ui.viewPagerHome.imagePager.ImagePagerViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,6 +46,10 @@ class add_files_popup : DialogFragment() {
 
     @Inject
     lateinit var imagePagerViewModel: ImagePagerViewModel
+
+    @Inject
+    lateinit var mainActivityViewModel: MainActivityViewModel
+
     lateinit var currentPhotoPath: String
     lateinit var photoURI: Uri
     private var flag = 0
@@ -81,7 +86,7 @@ class add_files_popup : DialogFragment() {
         registerForActivityResult(ActivityResultContracts.GetMultipleContents()) {
             if (it.size != 0)
                 it?.also {
-
+                    mainActivityViewModel.setAddFilesButtonShow(false)
                     Log.d(TAG_IMPORT_GALLERY, "Number of items : ${it.size}")
                     CoroutineScope(IO).launch {
                         CoroutineScope(Main).launch {
@@ -119,14 +124,14 @@ class add_files_popup : DialogFragment() {
                         }
                         imagePagerViewModel.initImages()
                         CoroutineScope(Main).launch {
+
                             Log.d(TAG_IMPORT_GALLERY, "Loading Image : false")
                             imagePagerViewModel.isLoading(false)
                         }
                     }
+                    mainActivityViewModel.setAddFilesButtonShow(true)
                     navController.popBackStack()
                 }
-            else
-                ToastMessage("Error importing image from gallery")
         }
 
     private val cameraActivityRegister =

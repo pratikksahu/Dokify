@@ -3,8 +3,11 @@ package com.pratiksahu.dokify
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -16,9 +19,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import java.io.File
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class landingPage : Fragment(R.layout.landing_page_fragment) {
+
+    @Inject
+    lateinit var mainActivityViewModel: MainActivityViewModel
 
     private val navController by lazy { NavHostFragment.findNavController(this) }
 
@@ -42,7 +49,18 @@ class landingPage : Fragment(R.layout.landing_page_fragment) {
             createTempDirectory()
         }
         AddFilesButtonSetup()
+        setObservers()
         initViewPager()
+    }
+
+    fun setObservers() {
+        mainActivityViewModel.addFilesShow.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                addFiles.visibility = VISIBLE
+            } else {
+                addFiles.visibility = GONE
+            }
+        })
     }
 
     fun createTempDirectory() {
