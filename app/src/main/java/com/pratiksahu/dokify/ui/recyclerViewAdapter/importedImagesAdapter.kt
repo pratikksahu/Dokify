@@ -48,7 +48,7 @@ class ImportedImagesAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
+        val view = ViewHolder(
             DataBindingUtil.inflate(
                 LayoutInflater.from(parent.context),
                 R.layout.imported_docks_item,
@@ -56,6 +56,10 @@ class ImportedImagesAdapter(
                 false
             )
         )
+        val params = view.itemView.layoutParams
+        params.width = -(parent.measuredHeight / 2) - 2
+        view.itemView.layoutParams = params
+        return view
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
