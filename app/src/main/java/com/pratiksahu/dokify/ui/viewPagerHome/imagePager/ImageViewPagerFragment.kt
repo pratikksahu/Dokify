@@ -242,6 +242,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
                     importedImagesAdapter?.setSelectedItems(selectedItems)
                 }
             )
+
             importedocks.apply {
                 layoutManager = GridLayoutManager(requireContext(), 2)
                 itemAnimator = DefaultItemAnimator()

@@ -78,40 +78,43 @@ class add_files_popup : DialogFragment() {
 
     private val galleryActivityRegister =
         registerForActivityResult(ActivityResultContracts.GetMultipleContents()) {
-            it?.also {
-                Log.d(TAG_IMPORT_GALLERY, "Number of items : ${it.size}")
-                CoroutineScope(IO).launch {
-                    CoroutineScope(Main).launch {
-                        Log.d(TAG_IMPORT_GALLERY, "Loading Image : true")
-                        imagePagerViewModel.isLoading(true)
-                    }
-                    for (i in it.indices) {
-                        val timeStamp =
-                            i.toString() + "_" + SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-                        createFile(timeStamp, "JPEG", ".jpeg")
-                        val bitMap = ImageDecoder.decodeBitmap(
-                            ImageDecoder.createSource(
-                                requireContext().contentResolver,
-                                it[i]
+            if (it.size != 0)
+                it?.also {
+                    Log.d(TAG_IMPORT_GALLERY, "Number of items : ${it.size}")
+                    CoroutineScope(IO).launch {
+                        CoroutineScope(Main).launch {
+                            Log.d(TAG_IMPORT_GALLERY, "Loading Image : true")
+                            imagePagerViewModel.isLoading(true)
+                        }
+                        for (i in it.indices) {
+                            val timeStamp =
+                                i.toString() + "_" + SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+                            createFile(timeStamp, "JPEG", ".jpeg")
+                            val bitMap = ImageDecoder.decodeBitmap(
+                                ImageDecoder.createSource(
+                                    requireContext().contentResolver,
+                                    it[i]
+                                )
                             )
-                        )
-                        val opstream = FileOutputStream(currentPhotoPath)
+                            val opstream = FileOutputStream(currentPhotoPath)
 
-                        //creating byteoutputstream
-                        val btopstream = ByteArrayOutputStream(1024)
-                        bitMap.compress(Bitmap.CompressFormat.JPEG, compression, btopstream)
-                        opstream.write(btopstream.toByteArray())
-                        opstream.flush()
-                        opstream.close()
+                            //creating byteoutputstream
+                            val btopstream = ByteArrayOutputStream(1024)
+                            bitMap.compress(Bitmap.CompressFormat.JPEG, compression, btopstream)
+                            opstream.write(btopstream.toByteArray())
+                            opstream.flush()
+                            opstream.close()
+                        }
+                        imagePagerViewModel.initImages()
+                        CoroutineScope(Main).launch {
+                            Log.d(TAG_IMPORT_GALLERY, "Loading Image : false")
+                            imagePagerViewModel.isLoading(false)
+                        }
                     }
-                    imagePagerViewModel.initImages()
-                    CoroutineScope(Main).launch {
-                        Log.d(TAG_IMPORT_GALLERY, "Loading Image : false")
-                        imagePagerViewModel.isLoading(false)
-                    }
+                    navController.popBackStack()
                 }
-                navController.popBackStack()
-            }
+            else
+                ToastMessage("Error importing image from gallery")
         }
 
     private val cameraActivityRegister =

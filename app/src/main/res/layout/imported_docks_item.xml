@@ -10,13 +10,13 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="250sp"
-        android:layout_height="204dp">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/importedImage"
-            android:layout_width="249dp"
-            android:layout_height="196dp"
+            android:layout_width="200sp"
+            android:layout_height="200sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
@@ -28,7 +28,7 @@
             android:id="@+id/singleItemCheckBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="#000000"
+            android:buttonTint="#000000"
             android:checked="false"
             android:hapticFeedbackEnabled="true"
             app:layout_constraintBottom_toBottomOf="@+id/importedImage"
