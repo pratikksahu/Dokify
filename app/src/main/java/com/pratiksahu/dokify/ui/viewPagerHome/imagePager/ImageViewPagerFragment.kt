@@ -11,6 +11,7 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -113,6 +114,18 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        activity?.onBackPressedDispatcher?.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (flagForSelection == 1)
+                        cancelSelectionButton.performClick()
+                    else if (flagForRearrange == 1)
+                        rearrangeButton.performClick()
+                    else
+                        navController.popBackStack()
+                }
+            })
         setObservables()
         binding = CreatePdfFragmentBinding.inflate(inflater, container, false)
 
@@ -208,10 +221,12 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
                 moreOptions.visibility = GONE
                 guideText.text = getString(R.string.emptyFolderMessage)
                 guideText.visibility = VISIBLE
+                importedocks.visibility = GONE
             } else {
                 guideText.visibility = GONE
                 moreOptions.visibility = VISIBLE
                 rearrangeButton.visibility = VISIBLE
+                importedocks.visibility = VISIBLE
             }
         })
         imagePagerViewModel.imagesInFolder.observe(viewLifecycleOwner, Observer {
@@ -499,7 +514,7 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
         cancelSelectionButton.visibility = GONE
 
         //Show guide text
-        guideText.visibility = GONE
+//        guideText.visibility = GONE
         rearrangeButton.visibility = VISIBLE
         moreOptions.visibility = VISIBLE
     }
@@ -509,10 +524,10 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
         selectAllCheckBox.visibility = VISIBLE
         deleteFileButton.visibility = VISIBLE
         pdfDialog.visibility = VISIBLE
-        cancelSelectionButton.visibility = VISIBLE
+        cancelSelectionButton.visibility = GONE
 
         //Hide guide text and Rearrange button
-        guideText.visibility = GONE
+//        guideText.visibility = GONE
         rearrangeButton.visibility = GONE
         moreOptions.visibility = GONE
     }

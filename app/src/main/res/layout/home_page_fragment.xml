@@ -5,22 +5,34 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data></data>
-
-
-    <ScrollView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/home_background_color">
+        android:background="#FF303030"
+        tools:context=".MainActivity">
 
-        <LinearLayout
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/home_background_color"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.30"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/dashBoard"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="100sp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/dashBoard"
+                    android:layout_width="match_parent"
+                    android:layout_height="100sp"
                 android:layout_marginLeft="5sp"
                 android:layout_marginTop="5sp"
                 android:layout_marginRight="5sp">
@@ -51,7 +63,8 @@
                 tools:listitem="@layout/dashboard_item_cards">
 
             </androidx.recyclerview.widget.RecyclerView>>
-        </LinearLayout>
-    </ScrollView>
+            </LinearLayout>
+        </ScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

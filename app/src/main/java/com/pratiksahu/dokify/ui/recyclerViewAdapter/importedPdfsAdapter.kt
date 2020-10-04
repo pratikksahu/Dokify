@@ -45,7 +45,7 @@ class ImportedPdfsAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
+        val view = ViewHolder(
             DataBindingUtil.inflate(
                 LayoutInflater.from(parent.context),
                 R.layout.imported_docks_pdf_item,
@@ -53,6 +53,7 @@ class ImportedPdfsAdapter(
                 false
             )
         )
+        return view
     }
 
 

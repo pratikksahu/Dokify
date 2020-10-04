@@ -11,6 +11,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -55,6 +56,16 @@ class PdfViewPagerFragment : Fragment(R.layout.view_pdf_fragment) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        activity?.onBackPressedDispatcher?.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (flagForSelection == 1)
+                        cancelSelectionButton.performClick()
+                    else
+                        navController.popBackStack()
+                }
+            })
         binding = ViewPdfFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -79,6 +90,7 @@ class PdfViewPagerFragment : Fragment(R.layout.view_pdf_fragment) {
     }
 
     fun setupObservers() {
+
         pdfViewPagerFragmentViewModel.initPdf()
 
         pdfViewPagerFragmentViewModel.isEmpty.observe(viewLifecycleOwner, Observer {
@@ -196,10 +208,25 @@ class PdfViewPagerFragment : Fragment(R.layout.view_pdf_fragment) {
                             selectedItemsPdf.add(dockItem.imageUri)
                         }
                     } else {
-                        if (selectedItems.contains(pos))
+                        if (selectAllCheckBox.isChecked) {
+                            val tempSelectedItems = ArrayList<Int>()
+                            val tempSelectedItemsImage = ArrayList<Uri>()
                             selectedItems.remove(pos)
-                        if (selectedItemsPdf.contains(dockItem!!.imageUri))
-                            selectedItemsPdf.remove(dockItem.imageUri)
+                            selectedItemsPdf.remove(dockItem!!.imageUri)
+                            tempSelectedItems.addAll(selectedItems)
+                            tempSelectedItemsImage.addAll(selectedItemsPdf)
+                            selectAllCheckBox.isChecked = false
+                            selectedItems.clear()
+                            selectedItemsPdf.clear()
+                            selectedItemsPdf.addAll(tempSelectedItemsImage)
+                            selectedItems.addAll(tempSelectedItems)
+                            importedPdfsAdapter?.setSelectedItems(selectedItems)
+                        } else {
+                            if (selectedItems.contains(pos))
+                                selectedItems.remove(pos)
+                            if (selectedItemsPdf.contains(dockItem!!.imageUri))
+                                selectedItemsPdf.remove(dockItem.imageUri)
+                        }
                     }
                     importedPdfsAdapter?.setSelectedItems(selectedItems)
                 }
@@ -211,12 +238,27 @@ class PdfViewPagerFragment : Fragment(R.layout.view_pdf_fragment) {
                     selectedItems.add(pos)
                     selectedItemsPdf.add(item!!.imageUri)
                 } else {
-                    if (selectAllCheckBox.isChecked)
-                        selectAllCheckBox.isChecked = false
-                    if (selectedItems.contains(pos))
+                    if (selectAllCheckBox.isChecked) {
+                        val tempSelectedItems = ArrayList<Int>()
+                        val tempSelectedItemsImage = ArrayList<Uri>()
                         selectedItems.remove(pos)
-                    if (selectedItemsPdf.contains(item!!.imageUri))
-                        selectedItemsPdf.remove(item.imageUri)
+                        selectedItemsPdf.remove(item!!.imageUri)
+                        tempSelectedItems.addAll(selectedItems)
+                        tempSelectedItemsImage.addAll(selectedItemsPdf)
+                        selectAllCheckBox.isChecked = false
+                        selectedItems.clear()
+                        selectedItemsPdf.clear()
+                        selectedItemsPdf.addAll(tempSelectedItemsImage)
+                        selectedItems.addAll(tempSelectedItems)
+                        importedPdfsAdapter?.setSelectedItems(selectedItems)
+                    } else {
+                        if (selectAllCheckBox.isChecked)
+                            selectAllCheckBox.isChecked = false
+                        if (selectedItems.contains(pos))
+                            selectedItems.remove(pos)
+                        if (selectedItemsPdf.contains(item!!.imageUri))
+                            selectedItemsPdf.remove(item.imageUri)
+                    }
                 }
                 importedPdfsAdapter?.setSelectedItems(selectedItems)
             }
@@ -322,7 +364,7 @@ class PdfViewPagerFragment : Fragment(R.layout.view_pdf_fragment) {
         //Hide buttons
         selectAllCheckBox.visibility = View.VISIBLE
         deleteFileButton.visibility = View.VISIBLE
-        cancelSelectionButton.visibility = View.VISIBLE
+        cancelSelectionButton.visibility = View.GONE
         shareMultiple.visibility = VISIBLE
 
         //Hide guide text and rearrange button
