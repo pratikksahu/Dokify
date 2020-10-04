@@ -48,7 +48,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:padding="10sp">
+                    android:padding="5sp">
 
                     <CheckBox
                         android:id="@+id/singleItemCheckBox"
@@ -69,38 +69,4 @@
         </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!--    <androidx.constraintlayout.widget.ConstraintLayout-->
-    <!--        android:layout_width="210sp"-->
-    <!--        android:layout_height="210sp">-->
-
-    <!--        <ImageView-->
-    <!--            android:id="@+id/importedImage"-->
-    <!--            android:layout_width="200sp"-->
-    <!--            android:layout_height="200sp"-->
-    <!--            android:layout_marginLeft="3sp"-->
-    <!--            android:layout_marginTop="3sp"-->
-    <!--            android:layout_marginRight="5sp"-->
-    <!--            android:layout_marginBottom="3sp"-->
-    <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--            app:layout_constraintEnd_toEndOf="parent"-->
-    <!--            app:layout_constraintHorizontal_bias="1.0"-->
-    <!--            app:layout_constraintStart_toStartOf="parent"-->
-    <!--            app:layout_constraintTop_toTopOf="parent"-->
-    <!--            app:srcCompat="@drawable/ic_launcher_background" />-->
-
-    <!--        <CheckBox-->
-    <!--            android:id="@+id/singleItemCheckBox"-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:buttonTint="#000000"-->
-    <!--            android:checked="false"-->
-    <!--            android:hapticFeedbackEnabled="true"-->
-    <!--            app:layout_constraintBottom_toBottomOf="@+id/importedImage"-->
-    <!--            app:layout_constraintEnd_toEndOf="parent"-->
-    <!--            app:layout_constraintHorizontal_bias="0.0"-->
-    <!--            app:layout_constraintStart_toStartOf="@+id/importedImage"-->
-    <!--            app:layout_constraintTop_toTopOf="parent"-->
-    <!--            app:layout_constraintVertical_bias="1.0" />-->
-
-    <!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
 </layout>
