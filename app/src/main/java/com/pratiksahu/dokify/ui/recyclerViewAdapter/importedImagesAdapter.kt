@@ -56,9 +56,12 @@ class ImportedImagesAdapter(
                 false
             )
         )
-        val params = view.itemView.layoutParams
-        params.width = -(parent.measuredHeight / 2) - 2
-        view.itemView.layoutParams = params
+        val params = view.itemView.importedImage.layoutParams
+        val marginParams = view.itemView
+        println("TESTING ${params.width} ${params.height}")
+        params.width = (parent.measuredWidth / 2)
+        params.height = (parent.measuredHeight / 4)
+        view.itemView.importedImage.layoutParams = params
         return view
     }
 
@@ -107,6 +110,7 @@ class ImportedImagesAdapter(
         fun bind(
             position: Int
         ) {
+            binding.pgCount.text = "(" + (position + 1).toString() + ")"
             binding.docs = items[position]
             binding.executePendingBindings()
         }
