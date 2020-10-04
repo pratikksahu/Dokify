@@ -20,12 +20,18 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.pratiksahu.dokify.MainActivityViewModel
 import com.pratiksahu.dokify.R
 import com.pratiksahu.dokify.`interface`.ToBlackWhite
-import com.pratiksahu.dokify.databinding.CommonViewPagerBinding
+import com.pratiksahu.dokify.databinding.CreatePdfFragmentBinding
 import com.pratiksahu.dokify.model.DocInfo
 import com.pratiksahu.dokify.ui.recyclerViewAdapter.ImportedImagesAdapter
-import com.pratiksahu.dokify.ui.viewPagerHome.pdfPager.PdfViewPagerFragmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.common_view_pager.*
+import kotlinx.android.synthetic.main.create_pdf_fragment.*
+import kotlinx.android.synthetic.main.view_pdf_fragment.actionsTab
+import kotlinx.android.synthetic.main.view_pdf_fragment.cancelSelectionButton
+import kotlinx.android.synthetic.main.view_pdf_fragment.deleteFileButton
+import kotlinx.android.synthetic.main.view_pdf_fragment.guideText
+import kotlinx.android.synthetic.main.view_pdf_fragment.loadingData
+import kotlinx.android.synthetic.main.view_pdf_fragment.selectAllCheckBox
+import kotlinx.android.synthetic.main.view_pdf_fragment.waitMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -39,7 +45,7 @@ import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
-class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
+class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
 
     private val TAG_DELETE = "IMAGE_DELETE"
     private val TAG_IMAGE_LIST = "IMAGE_LIST"
@@ -47,13 +53,11 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
     @Inject
     lateinit var imagePagerViewModel: ImagePagerViewModel
 
-    @Inject
-    lateinit var pdfViewPagerFragmentViewModel: PdfViewPagerFragmentViewModel
 
     @Inject
     lateinit var mainActivityViewModel: MainActivityViewModel
 
-    lateinit var binding: CommonViewPagerBinding
+    lateinit var binding: CreatePdfFragmentBinding
 
 
     private val imageList = ArrayList<DocInfo>()  //Source of images from directory
@@ -110,7 +114,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
         savedInstanceState: Bundle?
     ): View? {
         setObservables()
-        binding = CommonViewPagerBinding.inflate(inflater, container, false)
+        binding = CreatePdfFragmentBinding.inflate(inflater, container, false)
 
         return binding.root
     }
@@ -124,7 +128,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
         progressCircle.centerRadius = 30f
         progressCircle.start()
 
-        importedDocksPdf.visibility = GONE
+        AddFilesButtonSetup()
         hideActionsTabView()
         rearrangeButton.visibility = GONE
         moreOptions.visibility = GONE
@@ -158,11 +162,24 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
         directory.mkdir()
     }
 
+    fun AddFilesButtonSetup() {
+        addFiles.setOnClickListener(null)
+        addFiles.setOnClickListener {
+            navController.navigate(R.id.action_createPdfFragment_to_add_files_popup)
+        }
+    }
+
 
     fun setObservables() {
-        pdfViewPagerFragmentViewModel.pdfPath = getString(R.string.pdfOutputPath)
-        imagePagerViewModel.tempPath = getString(R.string.tempOutputPath)
-        imagePagerViewModel.picturePath = getString(R.string.imageOutputPath)
+
+        mainActivityViewModel.addFilesShow.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                addFiles.visibility = VISIBLE
+            } else {
+                addFiles.visibility = GONE
+            }
+        })
+
         imagePagerViewModel.setIsConverted((false))
         imagePagerViewModel.isConverted.observe(viewLifecycleOwner, Observer {
             if (it)
@@ -219,7 +236,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
                     if (flagForSelection == 0) {
                         if (dockItem != null && flagForRearrange == 0) {
                             imagePagerViewModel.setSelectedImage(dockItem)
-                            navController.navigate(R.id.action_landingPage_to_crop_or_convert_dialog)
+                            navController.navigate(R.id.action_createPdfFragment_to_crop_or_convert_dialog)
                         }
                     }
                     //IMAGE CLICKED FOR CHECKBOX ACTION OR NOT
@@ -353,7 +370,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
                             waitMessage.visibility = GONE
                             loadingData.visibility = GONE
                             requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                            navController.navigate(R.id.action_landingPage_to_convert_to_pdf_dialog)
+                            navController.navigate(R.id.action_createPdfFragment_to_convert_to_pdf_dialog)
                         }
                     }
                 }
@@ -390,7 +407,7 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
                 mainActivityViewModel.setAddFilesButtonShow(false)
                 deleteFlag = 1
                 imagePagerViewModel.setImageDelete(true, selectedItemsImage)
-                navController.navigate(R.id.action_landingPage_to_delete_confirmation_dialog)
+                navController.navigate(R.id.action_createPdfFragment_to_delete_confirmation_dialog)
             } else
                 ToastMessage("No items to delete")
 
@@ -479,7 +496,6 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
         selectAllCheckBox.visibility = GONE
         deleteFileButton.visibility = GONE
         pdfDialog.visibility = GONE
-        shareMultiple.visibility = GONE
         cancelSelectionButton.visibility = GONE
 
         //Show guide text
@@ -493,7 +509,6 @@ class ImageViewPagerFragment : Fragment(R.layout.common_view_pager) {
         selectAllCheckBox.visibility = VISIBLE
         deleteFileButton.visibility = VISIBLE
         pdfDialog.visibility = VISIBLE
-        shareMultiple.visibility = GONE
         cancelSelectionButton.visibility = VISIBLE
 
         //Hide guide text and Rearrange button

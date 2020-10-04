@@ -57,8 +57,6 @@ class ImportedImagesAdapter(
             )
         )
         val params = view.itemView.importedImage.layoutParams
-        val marginParams = view.itemView
-        println("TESTING ${params.width} ${params.height}")
         params.width = (parent.measuredWidth / 2)
         params.height = (parent.measuredHeight / 4)
         view.itemView.importedImage.layoutParams = params

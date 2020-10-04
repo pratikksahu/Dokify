@@ -13,4 +13,5 @@ class MainActivityViewModel @ViewModelInject constructor() : ViewModel() {
     fun setAddFilesButtonShow(value: Boolean) {
         _addFilesShow.value = value
     }
+
 }

@@ -57,11 +57,11 @@ class PdfViewPagerFragmentViewModel @ViewModelInject constructor() : ViewModel()
             CoroutineScope(Dispatchers.Main).launch {
                 _loading.value = true
             }
-//            val path = R.string.pdfOutputPath.toString()
+            _pdfInFolder.value?.clear()
             val directory = File(pdfPath)
             if (directory.exists()) {
                 val files: Array<File> = directory.listFiles()
-                if (files.size > 0) {
+                if (files.isNotEmpty()) {
                     Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed())
                     val tempDocInfoList = ArrayList<DocInfo>()
                     for (i in files.indices) {

@@ -92,6 +92,7 @@ class delete_confirmation_dialog : DialogFragment() {
                 }
                 pdfViewPagerFragmentViewModel.setPdfDelete(false, null)
             }
+
             mainActivityViewModel.setAddFilesButtonShow(true)
             navController.popBackStack()
         }

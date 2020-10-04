@@ -19,27 +19,27 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.pratiksahu.dokify.R
-import com.pratiksahu.dokify.databinding.CommonViewPagerBinding
+import com.pratiksahu.dokify.databinding.ViewPdfFragmentBinding
 import com.pratiksahu.dokify.model.DocInfo
 import com.pratiksahu.dokify.ui.recyclerViewAdapter.ImportedPdfsAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.common_view_pager.*
+import kotlinx.android.synthetic.main.view_pdf_fragment.*
 import java.io.File
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class PdfViewPagerFragment : Fragment(R.layout.common_view_pager) {
+class PdfViewPagerFragment : Fragment(R.layout.view_pdf_fragment) {
 
-    val TAG_PDF_LIST = "PDF LOADING"
-    val TAG_SHARE = "PDF SHARED"
-    val TAG_OPEN = "PDF OPEN"
+    val TAG_PDF_LIST = "PDF_LOADING"
+    val TAG_SHARE = "PDF_SHARED"
+    val TAG_OPEN = "PDF_OPEN"
 
     @Inject
     lateinit var pdfViewPagerFragmentViewModel: PdfViewPagerFragmentViewModel
     var importedPdfsAdapter: ImportedPdfsAdapter? = null
 
-    lateinit var binding: CommonViewPagerBinding
+    lateinit var binding: ViewPdfFragmentBinding
 
     private val navController by lazy { NavHostFragment.findNavController(this) }
 
@@ -55,18 +55,19 @@ class PdfViewPagerFragment : Fragment(R.layout.common_view_pager) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = CommonViewPagerBinding.inflate(inflater, container, false)
+        binding = ViewPdfFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        actionsTab.layoutTransition.setAnimateParentHierarchy(false)
+
+//        actionsTab.layoutTransition.setAnimateParentHierarchy(false)
         progressCircle = CircularProgressDrawable(requireContext())
         progressCircle.strokeWidth = 5f
         progressCircle.centerRadius = 30f
         progressCircle.start()
-        importedocks.visibility = GONE
+
         hideActionsTabView()
         setupSelectAllCheckBoxListener()
         setupShareMultiple()
@@ -83,16 +84,15 @@ class PdfViewPagerFragment : Fragment(R.layout.common_view_pager) {
         pdfViewPagerFragmentViewModel.isEmpty.observe(viewLifecycleOwner, Observer {
             if (it) {
                 guideText.text = "No pdf found"
-                hideActionsTabView()
             } else {
                 guideText.text = "Hold pdf for more options"
             }
         })
         pdfViewPagerFragmentViewModel.loading.observe(viewLifecycleOwner, Observer {
-            Log.d(TAG_PDF_LIST, "LOADING PDF STATUS :" + it.toString())
+            Log.d(TAG_PDF_LIST, "LOADING PDF STATUS :$it")
             if (it) {
                 importedDocksPdf.visibility = GONE
-                loadingData.visibility = View.VISIBLE
+                loadingData.visibility = VISIBLE
                 waitMessage.visibility = VISIBLE
             } else {
                 loadingData.visibility = GONE
@@ -104,6 +104,7 @@ class PdfViewPagerFragment : Fragment(R.layout.common_view_pager) {
         pdfViewPagerFragmentViewModel.pdfInFolder.observe(viewLifecycleOwner, Observer {
             pdfList.clear()
             pdfList.addAll(it)
+            Log.d(TAG_PDF_LIST, it.toString())
             importedPdfsAdapter?.items = pdfList
         })
     }
@@ -129,7 +130,7 @@ class PdfViewPagerFragment : Fragment(R.layout.common_view_pager) {
             } else {
                 Toast.makeText(
                     requireContext(),
-                    "Please select atleast one image",
+                    "Please select atleast one pdf",
                     Toast.LENGTH_LONG
                 ).show()
             }
@@ -138,7 +139,7 @@ class PdfViewPagerFragment : Fragment(R.layout.common_view_pager) {
 
     fun initAdapter() {
         importedPdfsAdapter = ImportedPdfsAdapter(
-            pdfList,
+            emptyList(),
             { view, pos, dockItem ->
                 Log.d(TAG_SHARE, dockItem.toString())
                 try {
@@ -253,9 +254,9 @@ class PdfViewPagerFragment : Fragment(R.layout.common_view_pager) {
             if (selectedItemsPdf.size > 0) {
                 deleteFlag = 1
                 pdfViewPagerFragmentViewModel.setPdfDelete(true, selectedItemsPdf)
-                navController.navigate(R.id.action_landingPage_to_delete_confirmation_dialog)
+                navController.navigate(R.id.action_viewPdfFragment_to_delete_confirmation_dialog)
             } else
-                ToastMessage("No items to delete")
+                ToastMessage("Select atleast one item to delete")
 
         }
     }
@@ -265,6 +266,7 @@ class PdfViewPagerFragment : Fragment(R.layout.common_view_pager) {
             if (!it) {
                 if (deleteFlag == 1) {
                     importedPdfsAdapter?.items = emptyList()
+                    pdfViewPagerFragmentViewModel.initPdf()
                     flagForSelection = 0
                     hideActionsTabView()
                     selectAllCheckBox.isChecked = false
@@ -272,7 +274,6 @@ class PdfViewPagerFragment : Fragment(R.layout.common_view_pager) {
                     selectedItems.clear()
                     importedPdfsAdapter?.setIsLongClicked(false)
                     importedPdfsAdapter?.setSelectedItems(selectedItems)
-                    pdfViewPagerFragmentViewModel.initPdf()
                     deleteFlag == 0
                 }
             }
@@ -309,29 +310,24 @@ class PdfViewPagerFragment : Fragment(R.layout.common_view_pager) {
     fun hideActionsTabView() {
         //Hide buttons
         selectAllCheckBox.visibility = GONE
-        pdfDialog.visibility = GONE
         deleteFileButton.visibility = GONE
         cancelSelectionButton.visibility = GONE
         shareMultiple.visibility = GONE
         //Show guide text
         guideText.visibility = View.VISIBLE
         //Hide rearrange and moreOptions button
-        rearrangeButton.visibility = GONE
-        moreOptions.visibility = GONE
     }
 
     fun showActionsTabView() {
         //Hide buttons
         selectAllCheckBox.visibility = View.VISIBLE
-        pdfDialog.visibility = GONE
         deleteFileButton.visibility = View.VISIBLE
         cancelSelectionButton.visibility = View.VISIBLE
         shareMultiple.visibility = VISIBLE
 
         //Hide guide text and rearrange button
         guideText.visibility = GONE
-        rearrangeButton.visibility = GONE
-        moreOptions.visibility = GONE
+
     }
 
     fun ToastMessage(msg: String) {

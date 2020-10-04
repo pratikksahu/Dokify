@@ -6,21 +6,15 @@
     app:startDestination="@id/landingPage">
     <fragment
         android:id="@+id/landingPage"
-        android:name="com.pratiksahu.dokify.landingPage"
+        android:name="com.pratiksahu.dokify.homepage.HomePageActivity"
         android:label="fragment_landing_page"
-        tools:layout="@layout/landing_page_fragment">
+        tools:layout="@layout/home_page_fragment">
         <action
-            android:id="@+id/action_landingPage_to_add_files_popup"
-            app:destination="@id/add_files_popup" />
+            android:id="@+id/action_landingPage_to_createPdfFragment"
+            app:destination="@id/createPdfFragment" />
         <action
-            android:id="@+id/action_landingPage_to_crop_or_convert_dialog"
-            app:destination="@id/crop_or_convert_dialog" />
-        <action
-            android:id="@+id/action_landingPage_to_convert_to_pdf_dialog"
-            app:destination="@id/convert_to_pdf_dialog" />
-        <action
-            android:id="@+id/action_landingPage_to_delete_confirmation_dialog"
-            app:destination="@id/delete_confirmation_dialog" />
+            android:id="@+id/action_landingPage_to_viewPdfFragment"
+            app:destination="@id/viewPdfFragment" />
     </fragment>
     <dialog
         android:id="@+id/add_files_popup"
@@ -42,4 +36,31 @@
         android:name="com.pratiksahu.dokify.ui.dialogs.delete_confirmation_dialog"
         android:label="delete_confirmation_dialog"
         tools:layout="@layout/delete_confirmation_dialog" />
+    <fragment
+        android:id="@+id/createPdfFragment"
+        android:name="com.pratiksahu.dokify.ui.viewPagerHome.imagePager.ImageViewPagerFragment"
+        android:label="create_pdf_fragment"
+        tools:layout="@layout/create_pdf_fragment">
+        <action
+            android:id="@+id/action_createPdfFragment_to_add_files_popup"
+            app:destination="@id/add_files_popup" />
+        <action
+            android:id="@+id/action_createPdfFragment_to_crop_or_convert_dialog"
+            app:destination="@id/crop_or_convert_dialog" />
+        <action
+            android:id="@+id/action_createPdfFragment_to_convert_to_pdf_dialog"
+            app:destination="@id/convert_to_pdf_dialog" />
+        <action
+            android:id="@+id/action_createPdfFragment_to_delete_confirmation_dialog"
+            app:destination="@id/delete_confirmation_dialog" />
+    </fragment>
+    <fragment
+        android:id="@+id/viewPdfFragment"
+        android:name="com.pratiksahu.dokify.ui.viewPagerHome.pdfPager.PdfViewPagerFragment"
+        android:label="view_pdf_fragment"
+        tools:layout="@layout/view_pdf_fragment">
+        <action
+            android:id="@+id/action_viewPdfFragment_to_delete_confirmation_dialog"
+            app:destination="@id/delete_confirmation_dialog" />
+    </fragment>
 </navigation>

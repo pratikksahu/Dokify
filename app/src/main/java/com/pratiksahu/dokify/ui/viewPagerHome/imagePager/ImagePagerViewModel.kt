@@ -91,8 +91,7 @@ class ImagePagerViewModel @ViewModelInject constructor() : ViewModel(), Lifecycl
             CoroutineScope(Main).launch {
                 _loading.value = true
             }
-//            val path = R.string.tempOutputPath
-
+            _tempImageToConvert.value?.clear()
             val directory = File(tempPath)
             if (directory.exists()) {
                 val files: Array<File> = directory.listFiles()
@@ -122,7 +121,7 @@ class ImagePagerViewModel @ViewModelInject constructor() : ViewModel(), Lifecycl
             CoroutineScope(Main).launch {
                 _loading.value = true
             }
-//            val path = R.string.imageOutputPath.toString()
+            _newImage.value?.clear()
             val directory = File(picturePath)
             if (directory.exists()) {
                 val files: Array<File> = directory.listFiles()
