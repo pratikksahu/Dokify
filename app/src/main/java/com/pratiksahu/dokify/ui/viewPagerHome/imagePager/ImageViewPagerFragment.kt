@@ -434,7 +434,6 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
     fun setupRearrangeButton() {
         rearrangeButton.setOnClickListener {
             if (flagForRearrange == 0) {
-                guideText.visibility = GONE
                 mainActivityViewModel.setAddFilesButtonShow(false)
                 flagForRearrange = 1
                 rearrangeButton.text = "DONE"
@@ -443,7 +442,6 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
                 //Not using moreOptions
                 moreOptions.visibility = GONE
             } else if (flagForRearrange == 1) {
-                guideText.visibility = VISIBLE
                 mainActivityViewModel.setAddFilesButtonShow(true)
                 flagForRearrange = 0
                 rearrangeButton.text = "REARRANGE"
