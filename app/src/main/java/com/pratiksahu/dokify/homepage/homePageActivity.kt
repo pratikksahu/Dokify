@@ -37,7 +37,6 @@ class HomePageActivity : Fragment(R.layout.home_page_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         initAdapter()
     }
 
@@ -46,14 +45,16 @@ class HomePageActivity : Fragment(R.layout.home_page_fragment) {
         homePageItemAdapter = HomePageItemAdapter(
             listOf(
                 CardData(getString(R.string.createPdf), R.drawable.ic_button_pdf),
-                CardData(getString(R.string.viewPdf), R.drawable.ic_folder),
-                CardData(getString(R.string.imageToText), R.drawable.ic_image_text)
+                CardData(getString(R.string.viewPdf), R.drawable.ic_button_folder),
+                CardData(getString(R.string.imageToText), R.drawable.ic_image_text),
+                CardData(getString(R.string.appSetting), R.drawable.ic_button_settings)
             )
 
         ) { view, pos, item ->
             when (item!!.cardName) {
                 getString(R.string.createPdf) -> navController.navigate(R.id.action_landingPage_to_createPdfFragment)
                 getString(R.string.viewPdf) -> navController.navigate(R.id.action_landingPage_to_viewPdfFragment)
+                getString(R.string.appSetting) -> navController.navigate(R.id.action_landingPage_to_appSetting)
             }
 
         }

@@ -42,9 +42,10 @@
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.054"
+                    app:layout_constraintHorizontal_bias="0.055"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.347" />
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/addFiles"
@@ -70,17 +71,32 @@
 
                 <Button
                     android:id="@+id/moreOptions"
-                    android:layout_width="120sp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="50sp"
                     android:background="@drawable/button_background"
+                    android:singleLine="true"
                     android:text="More Options"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.47" />
+                    app:layout_constraintVertical_bias="0.47"
+                    app:layout_constraintWidth_percent="0.30" />
 
+
+                <TextView
+                    android:id="@+id/guideText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:singleLine="true"
+                    android:text="Hold image for more options"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/rearrangeButton"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent="0.45" />
 
                 <CheckBox
                     android:id="@+id/selectAllCheckBox"
@@ -127,33 +143,24 @@
 
                 <Button
                     android:id="@+id/rearrangeButton"
-                    android:layout_width="120sp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="50sp"
-                    android:background="@drawable/button_background"
+                    android:background="@drawable/popup_background"
                     android:text="Rearrange"
+                    android:textColor="#000000"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.47" />
+                    app:layout_constraintVertical_bias="0.47"
+                    app:layout_constraintWidth_percent="0.30" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-
-                <TextView
-                    android:id="@+id/guideText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Add images to create PDF"
-                    app:layout_constraintBottom_toBottomOf="@+id/importedocks"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.53" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/importedocks"
@@ -186,7 +193,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/waitMessage"
+                    android:id="@+id/notifyText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Please Wait"

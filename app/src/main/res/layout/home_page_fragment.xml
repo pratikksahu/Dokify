@@ -33,25 +33,26 @@
                     android:id="@+id/dashBoard"
                     android:layout_width="match_parent"
                     android:layout_height="100sp"
-                android:layout_marginLeft="5sp"
-                android:layout_marginTop="5sp"
-                android:layout_marginRight="5sp">
+                    android:layout_marginLeft="5sp"
+                    android:layout_marginTop="5sp"
+                    android:layout_marginRight="5sp">
 
-                <TextView
-                    android:id="@+id/textView7"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Dokify"
-                    android:textColor="#040303"
-                    android:textSize="40sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.054"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    <TextView
+                        android:id="@+id/textView7"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Dokify"
+                        android:textColor="#040303"
+                        android:textSize="40sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.055"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.347" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/dashboardCards"

@@ -21,6 +21,8 @@ import java.io.IOException
 
 
 class ImageUtils {
+
+
     val TAG_IMAGE_RESOLUTION = "IMAGE_RESOLUTION"
     fun createPdf(imageList: ArrayList<Uri>, filePath: String): Boolean {
         val list = imageList
@@ -101,9 +103,12 @@ class ImageUtils {
         return true
     }
 
-    fun getCompressedBitmap(imagePath: String?): Bitmap {
-        val maxWidth = 1920.0f
-        val maxHeight = 1080.0f
+    fun getCompressedBitmap(
+        imagePath: String?,
+        maxWidth: Float = 1920.0F,
+        maxHeight: Float = 1080.0f
+    ): Bitmap {
+
         var scaledBitmap: Bitmap? = null
         val options = BitmapFactory.Options()
         options.inJustDecodeBounds = true

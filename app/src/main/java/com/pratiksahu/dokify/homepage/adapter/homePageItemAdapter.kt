@@ -33,9 +33,6 @@ class HomePageItemAdapter(
                 false
             )
         )
-        val params = view.itemView.cardItemImageView.layoutParams
-        params.width = (parent.measuredWidth / 2)
-        view.itemView.cardItemImageView.layoutParams = params
         return view
     }
 

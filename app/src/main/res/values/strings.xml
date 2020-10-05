@@ -10,6 +10,8 @@
     <string name="createPdf">Create PDF</string>
     <string name="viewPdf">View PDF</string>
     <string name="imageToText">Image To Text</string>
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="appSetting">App Setting</string>
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="compressionGuide">Highest Compression = 20\nLowest Compression = 100</string>
 </resources>

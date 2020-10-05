@@ -31,4 +31,5 @@ object AppModule {
 
     @Provides
     fun provideGrayscaleconverter(): ToBlackWhite = ToBlackWhite()
+
 }

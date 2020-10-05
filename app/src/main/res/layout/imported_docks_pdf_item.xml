@@ -58,22 +58,20 @@
                     <LinearLayout
                         android:id="@+id/longPressArea"
                         android:layout_width="fill_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="fill_parent"
                         android:layout_marginTop="2sp"
                         android:layout_marginBottom="2sp"
                         android:layout_weight="1"
                         android:orientation="vertical"
                         android:paddingLeft="5sp"
                         android:paddingTop="5sp"
-                        android:paddingRight="5sp"
-                        android:paddingBottom="5sp">
+                        android:paddingRight="5sp">
 
                         <TextView
                             android:id="@+id/fileNameTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:maxLines="2"
-                            android:singleLine="false"
+                            android:singleLine="true"
                             android:text="@{docs.imageName}"
                             android:textSize="18sp" />
 

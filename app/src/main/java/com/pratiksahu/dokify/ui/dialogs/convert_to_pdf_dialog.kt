@@ -99,6 +99,7 @@ class convert_to_pdf_dialog : DialogFragment() {
 
         makePDF.setOnClickListener {
             val notify = CoroutineScope(Main).launch {
+                makePDF.isClickable = false
                 makePDF.text = "Please Wait"
                 imagePagerViewModel.setIsConverted(false)
                 delay(15)
@@ -127,6 +128,7 @@ class convert_to_pdf_dialog : DialogFragment() {
                 }
                 convertTask.invokeOnCompletion {
                     CoroutineScope(Main).launch {
+                        makePDF.isClickable = false
                         navController.popBackStack()
                     }
                 }

@@ -22,7 +22,10 @@
             android:id="@+id/cardView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10sp"
+            android:layout_marginStart="10sp"
+            android:layout_marginTop="15sp"
+            android:layout_marginEnd="10sp"
+            android:layout_marginBottom="15sp"
             android:background="@drawable/dashboard_card_background"
             app:cardElevation="5sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -37,16 +40,22 @@
                 android:gravity="center"
                 android:orientation="vertical"
                 android:paddingTop="10sp"
-                android:paddingBottom="10sp">
+                android:paddingBottom="10sp"
+                android:weightSum="2">
 
                 <ImageView
                     android:id="@+id/cardItemImageView"
-                    android:layout_width="200sp"
-                    android:layout_height="150sp" />
+                    android:layout_width="match_parent"
+                    android:layout_height="150sp"
+                    android:layout_marginStart="5sp"
+                    android:layout_marginLeft="5sp"
+                    android:layout_marginEnd="5sp"
+                    android:layout_weight="1" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:padding="5sp">

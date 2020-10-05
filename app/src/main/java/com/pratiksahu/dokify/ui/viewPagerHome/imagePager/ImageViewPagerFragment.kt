@@ -29,10 +29,9 @@ import kotlinx.android.synthetic.main.create_pdf_fragment.*
 import kotlinx.android.synthetic.main.view_pdf_fragment.actionsTab
 import kotlinx.android.synthetic.main.view_pdf_fragment.cancelSelectionButton
 import kotlinx.android.synthetic.main.view_pdf_fragment.deleteFileButton
-import kotlinx.android.synthetic.main.view_pdf_fragment.guideText
 import kotlinx.android.synthetic.main.view_pdf_fragment.loadingData
+import kotlinx.android.synthetic.main.view_pdf_fragment.notifyText
 import kotlinx.android.synthetic.main.view_pdf_fragment.selectAllCheckBox
-import kotlinx.android.synthetic.main.view_pdf_fragment.waitMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -79,6 +78,8 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
 
     var flagForSelection = 0
     var flagForRearrange = 0
+
+    var compression = 0
 
 
     //Drag and drop handler
@@ -145,12 +146,15 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
         hideActionsTabView()
         rearrangeButton.visibility = GONE
         moreOptions.visibility = GONE
-        guideText.visibility = VISIBLE
+        notifyText.visibility = VISIBLE
         pdfButtonListener()
         setupSelectAllCheckBoxListener()
         setupCancelButtonListener()
         setupRearrangeButton()
-        setupmoreOptionsListener()
+
+        //Not using moreOptions
+        //setupmoreOptionsListener()
+
         setupDeleteImageButtonListener()
         setupDeleteDialogListener()
         initDocsAdapter()
@@ -185,6 +189,16 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
 
     fun setObservables() {
 
+        mainActivityViewModel.compression.observe(viewLifecycleOwner, Observer {
+            val value = it.toInt()
+            if (value <= 20)
+                compression = it.toInt()
+            else if (value in 25..39)
+                compression = 25
+            else
+                compression = value - 20
+        })
+
         mainActivityViewModel.addFilesShow.observe(viewLifecycleOwner, Observer {
             if (it) {
                 addFiles.visibility = VISIBLE
@@ -204,11 +218,11 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
                 actionsTab.visibility = GONE
                 importedocks.visibility = GONE
                 loadingData.visibility = VISIBLE
-                waitMessage.visibility = VISIBLE
+                notifyText.text = "Please Wait"
+                notifyText.visibility = VISIBLE
             } else {
                 actionsTab.visibility = VISIBLE
                 loadingData.visibility = GONE
-                waitMessage.visibility = GONE
                 importedocks.visibility = VISIBLE
             }
         })
@@ -218,13 +232,18 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
         imagePagerViewModel.isEmpty.observe(viewLifecycleOwner, Observer { emptyFolder ->
             if (emptyFolder) {
                 rearrangeButton.visibility = GONE
+                //Not using moreOptions
                 moreOptions.visibility = GONE
-                guideText.text = getString(R.string.emptyFolderMessage)
-                guideText.visibility = VISIBLE
+                notifyText.text = getString(R.string.emptyFolderMessage)
+                notifyText.visibility = VISIBLE
+                guideText.visibility = GONE
                 importedocks.visibility = GONE
             } else {
-                guideText.visibility = GONE
-                moreOptions.visibility = VISIBLE
+                guideText.text = "Hold image for more options"
+                guideText.visibility = VISIBLE
+                notifyText.visibility = GONE
+                //Not using moreOptions
+                moreOptions.visibility = GONE
                 rearrangeButton.visibility = VISIBLE
                 importedocks.visibility = VISIBLE
             }
@@ -315,7 +334,16 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
                     }
                     importedImagesAdapter?.setSelectedItems(selectedItems)
                 }
-            )
+            ) { _, _, _ ->
+                if (flagForSelection == 0 && flagForRearrange == 0) {
+                    guideText.visibility = GONE
+                    helper.attachToRecyclerView(null)
+                    mainActivityViewModel.setAddFilesButtonShow(false)
+                    showActionsTabView()
+                    flagForSelection = 1
+                    importedImagesAdapter?.setIsLongClicked(true)
+                }
+            }
             importedocks.apply {
                 layoutManager = GridLayoutManager(requireContext(), 2)
                 itemAnimator = DefaultItemAnimator()
@@ -325,6 +353,8 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
 
     }
 
+
+    //Not using moreOptions
 
     fun setupmoreOptionsListener() {
         moreOptions.setOnClickListener {
@@ -341,6 +371,7 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
     fun pdfButtonListener() {
         pdfDialog.setOnClickListener {
             if (selectedItemsImage.size > 0) {
+                pdfDialog.isClickable = false
                 imagePagerViewModel.setImagesToConvert(selectedItemsImage)
                 CoroutineScope(Main).launch {
                     requireActivity().window.setFlags(
@@ -349,9 +380,9 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
                     )
                     createTempDirectory()
                     importedocks.visibility = GONE
-                    waitMessage.text = "Please Wait"
+                    notifyText.text = "Please Wait"
                     loadingData.visibility = VISIBLE
-                    waitMessage.visibility = VISIBLE
+                    notifyText.visibility = VISIBLE
 
                 }
                 val deleteTask = CoroutineScope(IO).launch {
@@ -366,12 +397,17 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
                                 File(it.path).delete()
                             }
                     }
+                    directory.mkdir()
                 }
                 val task = CoroutineScope(IO).launch {
                     if (selectedItemsImage.size == 1) {
                         createTempFile("_singlePhoto", "TEMP", ".jpg")
                         blackAndWhite(selectedItemsImage[0])
                     } else {
+                        val path = getString(R.string.tempOutputPath)
+                        val directory = File(path)
+                        if (!directory.exists())
+                            directory.mkdir()
                         for (i in selectedItemsImage.indices) {
                             createTempFile("_${i}", "TEMP", ".jpg")
                             blackAndWhite(selectedItemsImage[i])
@@ -382,9 +418,10 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
                     task.invokeOnCompletion {
                         CoroutineScope(Main).launch {
                             importedocks.visibility = VISIBLE
-                            waitMessage.visibility = GONE
+                            notifyText.visibility = GONE
                             loadingData.visibility = GONE
                             requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+                            pdfDialog.isClickable = true
                             navController.navigate(R.id.action_createPdfFragment_to_convert_to_pdf_dialog)
                         }
                     }
@@ -397,19 +434,23 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
     fun setupRearrangeButton() {
         rearrangeButton.setOnClickListener {
             if (flagForRearrange == 0) {
+                guideText.visibility = GONE
                 mainActivityViewModel.setAddFilesButtonShow(false)
                 flagForRearrange = 1
                 rearrangeButton.text = "DONE"
                 importedocks.layoutManager = LinearLayoutManager(requireContext())
                 helper.attachToRecyclerView(importedocks)
+                //Not using moreOptions
                 moreOptions.visibility = GONE
             } else if (flagForRearrange == 1) {
+                guideText.visibility = VISIBLE
                 mainActivityViewModel.setAddFilesButtonShow(true)
                 flagForRearrange = 0
                 rearrangeButton.text = "REARRANGE"
                 importedocks.layoutManager = GridLayoutManager(requireContext(), 2)
                 helper.attachToRecyclerView(null)
-                moreOptions.visibility = VISIBLE
+                //Not using moreOptions
+                moreOptions.visibility = GONE
             }
         }
     }
@@ -467,6 +508,7 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
                         }
                 }
             }
+            guideText.visibility = VISIBLE
             helper.attachToRecyclerView(null)
             flagForSelection = 0
             importedImagesAdapter?.setIsLongClicked(false)
@@ -514,9 +556,10 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
         cancelSelectionButton.visibility = GONE
 
         //Show guide text
-//        guideText.visibility = GONE
+//        notifyText.visibility = GONE
         rearrangeButton.visibility = VISIBLE
-        moreOptions.visibility = VISIBLE
+        //Not using moreOptions
+        moreOptions.visibility = GONE
     }
 
     fun showActionsTabView() {
@@ -527,8 +570,9 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
         cancelSelectionButton.visibility = GONE
 
         //Hide guide text and Rearrange button
-//        guideText.visibility = GONE
+//        notifyText.visibility = GONE
         rearrangeButton.visibility = GONE
+        //Not using moreOptions
         moreOptions.visibility = GONE
     }
 
@@ -555,7 +599,7 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
 
         //creating byteoutputstream
         val btopstream = ByteArrayOutputStream(1024)
-        result?.compress(Bitmap.CompressFormat.JPEG, 100, btopstream)
+        result?.compress(Bitmap.CompressFormat.JPEG, compression, btopstream)
         opstream.write(btopstream.toByteArray())
         opstream.flush()
         opstream.close()

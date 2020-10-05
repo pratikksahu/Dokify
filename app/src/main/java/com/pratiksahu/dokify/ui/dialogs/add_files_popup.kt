@@ -1,8 +1,10 @@
 package com.pratiksahu.dokify.ui.dialogs
 
+import ImageUtils
 import android.Manifest.permission
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
@@ -17,7 +19,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.NavHostFragment
 import com.pratiksahu.dokify.MainActivityViewModel
@@ -50,11 +51,14 @@ class add_files_popup : DialogFragment() {
     @Inject
     lateinit var mainActivityViewModel: MainActivityViewModel
 
+
     lateinit var currentPhotoPath: String
     lateinit var photoURI: Uri
     private var flag = 0
     private val navController by lazy { NavHostFragment.findNavController(this) }
-    var compression = 100
+
+
+    var compression = 0
 
 
     val permissionRequired = arrayOf(
@@ -116,7 +120,8 @@ class add_files_popup : DialogFragment() {
                             val opstream = FileOutputStream(currentPhotoPath)
 
                             //creating byteoutputstream
-                            val btopstream = ByteArrayOutputStream(1024)
+                            val btopstream = ByteArrayOutputStream()
+                            Log.d("COMPRESSION_VALUE", compression.toString())
                             bitMap.compress(Bitmap.CompressFormat.JPEG, compression, btopstream)
                             opstream.write(btopstream.toByteArray())
                             opstream.flush()
@@ -139,6 +144,26 @@ class add_files_popup : DialogFragment() {
             CoroutineScope(IO).launch {
                 if (it) {
                     Log.d(TAG_IMPORT_CAMERA, "Camera result: $it")
+
+
+                    val oldPath = currentPhotoPath
+                    val file = BitmapFactory.decodeFile(oldPath)
+                    val width = file.width.toFloat()
+                    val height = file.height.toFloat()
+                    val bitMap = ImageUtils.instant?.getCompressedBitmap(oldPath, width, height)
+
+                    val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+                    createFile(timeStamp, "JPEG", ".jpeg")
+                    val opstream = FileOutputStream(currentPhotoPath)
+                    //creating byteoutputstream
+                    val btopstream = ByteArrayOutputStream()
+                    bitMap?.compress(Bitmap.CompressFormat.JPEG, compression, btopstream)
+                    opstream.write(btopstream.toByteArray())
+                    opstream.flush()
+                    opstream.close()
+                    File(oldPath).delete()
+
+
                     imagePagerViewModel.initImages()
                 } else {
                     Log.d(TAG_IMPORT_CAMERA, "Camera result: $it")
@@ -165,29 +190,17 @@ class add_files_popup : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        compressionListener()
         gallerySetup()
         cameraSetup()
-        compressionSetup()
     }
 
-    fun compressionSetup() {
-        compressValue.setText("40")
-        compressValue.addTextChangedListener {
-            val text = it.toString()
-            if (text.isNotBlank() && text.isNotEmpty()) {
-                val value = text.toInt()
-                if (value > 100) {
-                    compression = 100
-                    ToastMessage("Maximum compression value is 100")
-                } else if (value < 20) {
-                    compression = 20
-                    ToastMessage("Minimum compression value is 20")
-                } else {
-                    compression = value
-                }
-            }
-        }
+    fun compressionListener() {
+        mainActivityViewModel.compression.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            compression = it.toInt()
+        })
     }
+
 
     fun gallerySetup() {
         fromGallery.setOnClickListener {

@@ -56,6 +56,13 @@ class PdfViewPagerFragment : Fragment(R.layout.view_pdf_fragment) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        binding = ViewPdfFragmentBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         activity?.onBackPressedDispatcher?.addCallback(
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
@@ -66,14 +73,6 @@ class PdfViewPagerFragment : Fragment(R.layout.view_pdf_fragment) {
                         navController.popBackStack()
                 }
             })
-        binding = ViewPdfFragmentBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-//        actionsTab.layoutTransition.setAnimateParentHierarchy(false)
         progressCircle = CircularProgressDrawable(requireContext())
         progressCircle.strokeWidth = 5f
         progressCircle.centerRadius = 30f
@@ -105,11 +104,11 @@ class PdfViewPagerFragment : Fragment(R.layout.view_pdf_fragment) {
             if (it) {
                 importedDocksPdf.visibility = GONE
                 loadingData.visibility = VISIBLE
-                waitMessage.visibility = VISIBLE
+                notifyText.visibility = VISIBLE
             } else {
                 loadingData.visibility = GONE
                 importedDocksPdf.visibility = View.VISIBLE
-                waitMessage.visibility = GONE
+                notifyText.visibility = GONE
             }
         })
 

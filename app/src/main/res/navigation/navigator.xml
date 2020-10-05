@@ -11,10 +11,17 @@
         tools:layout="@layout/home_page_fragment">
         <action
             android:id="@+id/action_landingPage_to_createPdfFragment"
-            app:destination="@id/createPdfFragment" />
+            app:destination="@id/createPdfFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
         <action
             android:id="@+id/action_landingPage_to_viewPdfFragment"
-            app:destination="@id/viewPdfFragment" />
+            app:destination="@id/viewPdfFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
+        <action
+            android:id="@+id/action_landingPage_to_appSetting"
+            app:destination="@id/appSetting" />
     </fragment>
     <dialog
         android:id="@+id/add_files_popup"
@@ -63,4 +70,9 @@
             android:id="@+id/action_viewPdfFragment_to_delete_confirmation_dialog"
             app:destination="@id/delete_confirmation_dialog" />
     </fragment>
+    <dialog
+        android:id="@+id/appSetting"
+        android:name="com.pratiksahu.dokify.module.AppSetting"
+        android:label="fragment_app_setting"
+        tools:layout="@layout/fragment_app_setting" />
 </navigation>

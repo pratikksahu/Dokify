@@ -3,6 +3,7 @@ package com.pratiksahu.dokify.`interface`
 import ImageUtils
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.renderscript.Allocation
 import android.renderscript.Matrix4f
@@ -15,8 +16,12 @@ class ToBlackWhite {
 
     fun convertToBW(context: Context, colorUri: Uri): Bitmap? {
 
+        val path = colorUri.path
+        val file = BitmapFactory.decodeFile(path)
+        val width = file.width.toFloat()
+        val height = file.height.toFloat()
         val colorUriBitMap =
-            ImageUtils.instant?.getCompressedBitmap(colorUri.path)
+            ImageUtils.instant?.getCompressedBitmap(path, width, height)
         //Transformation Matrix
         val redVal = 0.299f
         val greenVal = 0.587f

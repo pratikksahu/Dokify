@@ -19,8 +19,8 @@ class ImportedImagesAdapter(
     items: List<DocInfo>,
     val progressCircle: CircularProgressDrawable,
     private val itemClick: (view: View, position: Int, dockItem: DocInfo?) -> Unit,
-    private val itemCheckBoxClick: (dockItem: DocInfo?, position: Int, isChecked: Boolean) -> Unit
-//    private val itemLongClick: (view: View, position: Int, dockItem: DocInfo?) -> Unit
+    private val itemCheckBoxClick: (dockItem: DocInfo?, position: Int, isChecked: Boolean) -> Unit,
+    private val itemLongClick: (view: View, position: Int, dockItem: DocInfo?) -> Unit
 ) :
     RecyclerView.Adapter<ImportedImagesAdapter.ViewHolder>() {
 
@@ -66,7 +66,7 @@ class ImportedImagesAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(position)
         holder.itemView.importedImage.setOnClickListener(holder)
-//        holder.itemView.importedImage.setOnLongClickListener(holder)
+        holder.itemView.importedImage.setOnLongClickListener(holder)
         holder.itemView.singleItemCheckBox.setOnCheckedChangeListener(null)
         holder.itemView.singleItemCheckBox.visibility = if (isLongClicked) VISIBLE else GONE
         holder.itemView.singleItemCheckBox.isChecked = selectedItems.contains(position)
@@ -89,7 +89,7 @@ class ImportedImagesAdapter(
     }
 
     inner class ViewHolder(private val binding: ImportedDocksItemBinding) :
-        RecyclerView.ViewHolder(binding.root), OnClickListener {
+        RecyclerView.ViewHolder(binding.root), OnClickListener, OnLongClickListener {
 
         override fun onClick(v: View?) {
             v?.let {
@@ -97,12 +97,12 @@ class ImportedImagesAdapter(
             }
         }
 
-//        override fun onLongClick(v: View?): Boolean {
-//            v?.let {
-//                itemLongClick.invoke(it, adapterPosition, items[adapterPosition])
-//            }
-//            return true
-//        }
+        override fun onLongClick(v: View?): Boolean {
+            v?.let {
+                itemLongClick.invoke(it, adapterPosition, items[adapterPosition])
+            }
+            return true
+        }
 
 
         fun bind(
