@@ -22,6 +22,11 @@
         <action
             android:id="@+id/action_landingPage_to_appSetting"
             app:destination="@id/appSetting" />
+        <action
+            android:id="@+id/action_landingPage_to_fragmentImageToText"
+            app:destination="@id/fragmentImageToText"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
     </fragment>
     <dialog
         android:id="@+id/add_files_popup"
@@ -75,4 +80,13 @@
         android:name="com.pratiksahu.dokify.module.AppSetting"
         android:label="fragment_app_setting"
         tools:layout="@layout/fragment_app_setting" />
+    <fragment
+        android:id="@+id/fragmentImageToText"
+        android:name="com.pratiksahu.dokify.ui.screens.ImageToText"
+        android:label="fragment_image_to_text"
+        tools:layout="@layout/fragment_image_to_text">
+        <action
+            android:id="@+id/action_fragmentImageToText_to_add_files_popup"
+            app:destination="@id/add_files_popup" />
+    </fragment>
 </navigation>

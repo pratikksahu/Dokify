@@ -54,6 +54,7 @@ class HomePageActivity : Fragment(R.layout.home_page_fragment) {
             when (item!!.cardName) {
                 getString(R.string.createPdf) -> navController.navigate(R.id.action_landingPage_to_createPdfFragment)
                 getString(R.string.viewPdf) -> navController.navigate(R.id.action_landingPage_to_viewPdfFragment)
+                getString(R.string.imageToText) -> navController.navigate(R.id.action_landingPage_to_fragmentImageToText)
                 getString(R.string.appSetting) -> navController.navigate(R.id.action_landingPage_to_appSetting)
             }
 

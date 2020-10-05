@@ -136,18 +136,21 @@ class ImagePagerViewModel @ViewModelInject constructor() : ViewModel(), Lifecycl
                     }
                     CoroutineScope(Main).launch {
                         setImage(tempDocInfoList)
+                        _loading.value = false
                         _isEmpty.value = false
                     }
                 } else {
                     CoroutineScope(Main).launch {
+                        _loading.value = false
                         _isEmpty.value = true
                     }
                 }
             } else {
                 directory.mkdir()
-            }
-            CoroutineScope(Main).launch {
-                _loading.value = false
+                CoroutineScope(Main).launch {
+                    _loading.value = false
+                    _isEmpty.value = true
+                }
             }
         }
     }

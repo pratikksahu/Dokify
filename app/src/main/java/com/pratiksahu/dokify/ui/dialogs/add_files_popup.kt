@@ -59,6 +59,7 @@ class add_files_popup : DialogFragment() {
 
 
     var compression = 0
+    var forOCR = false
 
 
     val permissionRequired = arrayOf(
@@ -86,7 +87,7 @@ class add_files_popup : DialogFragment() {
         }
 
 
-    private val galleryActivityRegister =
+    private val galleryActivityRegisterMulti =
         registerForActivityResult(ActivityResultContracts.GetMultipleContents()) {
             if (it.size != 0)
                 it?.also {
@@ -129,14 +130,62 @@ class add_files_popup : DialogFragment() {
                         }
                         imagePagerViewModel.initImages()
                         CoroutineScope(Main).launch {
-
                             Log.d(TAG_IMPORT_GALLERY, "Loading Image : false")
                             imagePagerViewModel.isLoading(false)
                         }
                     }
                     mainActivityViewModel.setAddFilesButtonShow(true)
+                    fromGallery.isClickable = true
+                    fromCamera.isClickable = true
                     navController.popBackStack()
                 }
+        }
+    private val galleryActivityRegisterSingle =
+        registerForActivityResult(ActivityResultContracts.GetContent()) {
+
+            it?.also {
+                CoroutineScope(IO).launch {
+
+                    val bitMap: Bitmap
+                    val timeStamp =
+                        "OCR" + "_" + SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+                    createFile(timeStamp, "JPEG", ".jpeg")
+                    if (Build.VERSION.SDK_INT >= 29) {
+                        bitMap = ImageDecoder.decodeBitmap(
+                            ImageDecoder.createSource(
+                                requireContext().contentResolver,
+                                it
+                            )
+                        )
+                    } else {
+                        // Use older version
+                        bitMap = MediaStore.Images.Media.getBitmap(
+                            requireContext().contentResolver,
+                            it
+                        )
+                    }
+
+                    val opstream = FileOutputStream(currentPhotoPath)
+
+                    //creating byteoutputstream
+                    val btopstream = ByteArrayOutputStream()
+                    Log.d("COMPRESSION_VALUE", compression.toString())
+                    bitMap.compress(Bitmap.CompressFormat.JPEG, compression, btopstream)
+                    opstream.write(btopstream.toByteArray())
+                    opstream.flush()
+                    opstream.close()
+
+                }.invokeOnCompletion {
+                    CoroutineScope(Main).launch {
+
+                        mainActivityViewModel.setImageToTextPhotoPath(currentPhotoPath)
+                        mainActivityViewModel.setImageToText(false)
+                        fromGallery.isClickable = true
+                        fromCamera.isClickable = true
+                        navController.popBackStack()
+                    }
+                }
+            }
         }
 
     private val cameraActivityRegister =
@@ -152,7 +201,13 @@ class add_files_popup : DialogFragment() {
                     val height = file.height.toFloat()
                     val bitMap = ImageUtils.instant?.getCompressedBitmap(oldPath, width, height)
 
-                    val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+                    var timeStamp = ""
+                    if (forOCR)
+                        timeStamp = "OCR" + SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+                    else
+                        timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+
+
                     createFile(timeStamp, "JPEG", ".jpeg")
                     val opstream = FileOutputStream(currentPhotoPath)
                     //creating byteoutputstream
@@ -162,7 +217,6 @@ class add_files_popup : DialogFragment() {
                     opstream.flush()
                     opstream.close()
                     File(oldPath).delete()
-
 
                     imagePagerViewModel.initImages()
                 } else {
@@ -176,6 +230,10 @@ class add_files_popup : DialogFragment() {
                 }
             }.invokeOnCompletion {
                 CoroutineScope(Main).launch {
+                    mainActivityViewModel.setImageToTextPhotoPath(currentPhotoPath)
+                    mainActivityViewModel.setImageToText(false)
+                    fromGallery.isClickable = true
+                    fromCamera.isClickable = true
                     navController.popBackStack()
                 }
             }
@@ -190,6 +248,7 @@ class add_files_popup : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        imageToTextListener()
         compressionListener()
         gallerySetup()
         cameraSetup()
@@ -201,9 +260,17 @@ class add_files_popup : DialogFragment() {
         })
     }
 
+    fun imageToTextListener() {
+        mainActivityViewModel.imageToText.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            forOCR = it
+        })
+    }
+
 
     fun gallerySetup() {
         fromGallery.setOnClickListener {
+            fromCamera.isClickable = false
+            fromGallery.isClickable = false
             if (ActivityCompat.checkSelfPermission(
                     requireContext(),
                     permission.CAMERA
@@ -219,6 +286,8 @@ class add_files_popup : DialogFragment() {
             ) {
                 flag = 0
                 permissionActivityRegister.launch(permissionRequired)
+                fromGallery.isClickable = true
+                fromCamera.isClickable = true
             } else {
                 openGallery()
             }
@@ -227,6 +296,8 @@ class add_files_popup : DialogFragment() {
 
     fun cameraSetup() {
         fromCamera.setOnClickListener {
+            fromCamera.isClickable = false
+            fromGallery.isClickable = false
             if (ActivityCompat.checkSelfPermission(
                     requireContext(),
                     permission.CAMERA
@@ -242,6 +313,8 @@ class add_files_popup : DialogFragment() {
             ) {
                 flag = 1
                 permissionActivityRegister.launch(permissionRequired)
+                fromGallery.isClickable = true
+                fromCamera.isClickable = true
             } else {
                 openCamera()
             }
@@ -250,7 +323,11 @@ class add_files_popup : DialogFragment() {
 
 
     fun openGallery() {
-        galleryActivityRegister.launch("image/*")
+        if (!forOCR)
+            galleryActivityRegisterMulti.launch("image/*")
+        else
+            galleryActivityRegisterSingle.launch("image/*")
+
     }
 
 

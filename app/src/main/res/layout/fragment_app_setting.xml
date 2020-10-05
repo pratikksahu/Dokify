@@ -23,6 +23,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
                 android:text="Image Compression Value"
+                android:theme="@style/AppTheme"
                 android:textColor="#000000"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView9" />
@@ -39,6 +40,7 @@
                 android:singleLine="true"
                 android:textColor="#000000"
                 android:textColorHint="#8A8080"
+                android:theme="@style/AppTheme"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.106"
                 app:layout_constraintStart_toStartOf="parent"
@@ -50,6 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="@string/compressionGuide"
+                android:theme="@style/AppTheme"
                 android:textColor="#FFFFFF"
                 android:textSize="9sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -63,6 +66,7 @@
                 android:layout_marginTop="16sp"
                 android:letterSpacing="0.1"
                 android:text="App Settings"
+                android:theme="@style/AppTheme"
                 android:textColor="#000000"
                 android:textSize="20sp"
                 android:textStyle="bold"
@@ -77,6 +81,7 @@
                 android:layout_marginTop="184dp"
                 android:background="@drawable/button_background"
                 android:text="Save"
+                android:theme="@style/AppTheme"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView8" />
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -63,6 +63,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text="(20)"
+                        android:theme="@style/AppTheme"
                         android:textColor="#DFDCDC" />
                 </LinearLayout>
             </LinearLayout>

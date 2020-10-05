@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "303671323300",
+    "firebase_url": "https://dokify-19106.firebaseio.com",
+    "project_id": "dokify-19106",
+    "storage_bucket": "dokify-19106.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:303671323300:android:1f0abc5d2c9d856fde5431",
+        "android_client_info": {
+          "package_name": "com.pratiksahu.dokify"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "303671323300-f44gq8rll36hc58mv6qm04fodvq6fbf4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1-NkbG902TVR3G7YySROMnozY3YNNMf4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "303671323300-f44gq8rll36hc58mv6qm04fodvq6fbf4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

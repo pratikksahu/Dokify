@@ -73,16 +73,15 @@ class PdfViewPagerFragmentViewModel @ViewModelInject constructor() : ViewModel()
                     }
                     CoroutineScope(Dispatchers.Main).launch {
                         setPdf(tempDocInfoList)
+                        _loading.value = false
                         _isEmpty.value = false
                     }
                 } else {
                     CoroutineScope(Dispatchers.Main).launch {
+                        _loading.value = false
                         _isEmpty.value = true
                     }
                 }
-            }
-            CoroutineScope(Dispatchers.Main).launch {
-                _loading.value = false
             }
         }
     }

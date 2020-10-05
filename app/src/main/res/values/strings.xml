@@ -5,12 +5,12 @@
     <string name="pdfOutputPath">/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/PDF/</string>
     <string name="tempOutputPath">/storage/emulated/0/Android/data/com.pratiksahu.dokify/files/TMP/</string>
     <string name="emptyFolderMessage">Add images to create PDF</string>
-    <string name="notEmptyFolderMessage">Click here for more options</string>
+    <string name="notEmptyFolderMessage">Hold image for more options</string>
 
     <string name="createPdf">Create PDF</string>
     <string name="viewPdf">View PDF</string>
     <string name="imageToText">Image To Text</string>
-    <string name="appSetting">App Setting</string>
+    <string name="appSetting">App Settings</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="compressionGuide">Highest Compression = 20\nLowest Compression = 100</string>

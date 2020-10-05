@@ -47,7 +47,6 @@ import kotlin.collections.ArrayList
 @AndroidEntryPoint
 class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
 
-    private val TAG_DELETE = "IMAGE_DELETE"
     private val TAG_IMAGE_LIST = "IMAGE_LIST"
 
     @Inject
@@ -103,7 +102,6 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
         }
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-            TODO("Not yet implemented")
         }
     }
     val helper = ItemTouchHelper(callback)
@@ -212,39 +210,48 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
             if (it)
                 cancelSelectionButton.performClick()
         })
-        imagePagerViewModel.loading.observe(viewLifecycleOwner, Observer {
-            Log.d(TAG_IMAGE_LIST, "LOADING IMAGES STATUS :" + it.toString())
-            if (it) {
-                actionsTab.visibility = GONE
-                importedocks.visibility = GONE
-                loadingData.visibility = VISIBLE
-                notifyText.text = "Please Wait"
-                notifyText.visibility = VISIBLE
-            } else {
-                actionsTab.visibility = VISIBLE
-                loadingData.visibility = GONE
-                importedocks.visibility = VISIBLE
-            }
-        })
         imagePagerViewModel.initTempImages()
         imagePagerViewModel.initImages()
 
         imagePagerViewModel.isEmpty.observe(viewLifecycleOwner, Observer { emptyFolder ->
+
+            Log.d(TAG_IMAGE_LIST, "FOLDER EMPTY STATUS $emptyFolder")
             if (emptyFolder) {
                 rearrangeButton.visibility = GONE
                 //Not using moreOptions
                 moreOptions.visibility = GONE
+
+                //If Empty show empty message
                 notifyText.text = getString(R.string.emptyFolderMessage)
                 notifyText.visibility = VISIBLE
                 guideText.visibility = GONE
                 importedocks.visibility = GONE
             } else {
-                guideText.text = "Hold image for more options"
+                guideText.text = getString(R.string.notEmptyFolderMessage)
                 guideText.visibility = VISIBLE
                 notifyText.visibility = GONE
                 //Not using moreOptions
                 moreOptions.visibility = GONE
                 rearrangeButton.visibility = VISIBLE
+                importedocks.visibility = VISIBLE
+            }
+
+        })
+        imagePagerViewModel.loading.observe(viewLifecycleOwner, Observer { isLoading ->
+            Log.d(TAG_IMAGE_LIST, "LOADING IMAGES STATUS :" + isLoading.toString())
+            if (isLoading) {
+                actionsTab.visibility = GONE
+                importedocks.visibility = GONE
+                loadingData.visibility = VISIBLE
+
+                //Show loading message
+                notifyText.text = "Please Wait"
+                notifyText.visibility = VISIBLE
+
+            } else {
+                notifyText.visibility = GONE
+                actionsTab.visibility = VISIBLE
+                loadingData.visibility = GONE
                 importedocks.visibility = VISIBLE
             }
         })

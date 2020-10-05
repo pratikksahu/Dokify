@@ -25,6 +25,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30sp"
                 android:text="Are you sure you want to delete?"
+                android:theme="@style/AppTheme"
                 android:textAlignment="center"
                 android:textColor="#000000"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -40,6 +41,7 @@
                 android:layout_marginTop="20sp"
                 android:background="@drawable/button_background"
                 android:text="No"
+                android:theme="@style/AppTheme"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
@@ -51,6 +53,7 @@
                 android:layout_marginTop="20sp"
                 android:background="@drawable/button_background"
                 android:text="Yes"
+                android:theme="@style/AppTheme"
                 app:layout_constraintStart_toEndOf="@+id/noButton"
                 app:layout_constraintTop_toBottomOf="@+id/textView6" />
         </androidx.constraintlayout.widget.ConstraintLayout>
