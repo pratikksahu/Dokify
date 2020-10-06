@@ -42,6 +42,7 @@
 
             <EditText
                 android:id="@+id/fileNameTextBox"
+                style="@style/AppTextView"
                 android:layout_width="300sp"
                 android:layout_height="40sp"
                 android:layout_marginTop="28sp"
@@ -63,7 +64,7 @@
                 android:layout_marginTop="8sp"
                 android:maxLines="2"
                 android:text="Black And White PDF"
-                android:theme="@style/AppTheme"
+                android:theme="@style/AppTextView"
                 android:textColor="#000000"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.124"
@@ -72,12 +73,13 @@
 
             <Button
                 android:id="@+id/makePDF"
-                android:layout_width="100sp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12sp"
                 android:background="@drawable/button_background"
+                android:padding="6sp"
                 android:text="Button"
-                android:theme="@style/AppTheme"
+                android:theme="@style/AppTextView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/colorOrNot" />
@@ -115,9 +117,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="File Name"
-                android:theme="@style/AppTheme"
                 android:textColor="#000000"
                 android:textSize="10sp"
+                android:theme="@style/AppTextView"
                 app:layout_constraintEnd_toStartOf="@+id/guideline5"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/guideline4"

@@ -37,6 +37,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginTop="5sp"
+                android:layout_marginBottom="15sp"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:paddingTop="10sp"
@@ -46,7 +48,7 @@
                 <ImageView
                     android:id="@+id/cardItemImageView"
                     android:layout_width="match_parent"
-                    android:layout_height="150sp"
+                    android:layout_height="100sp"
                     android:layout_marginStart="5sp"
                     android:layout_marginLeft="5sp"
                     android:layout_marginEnd="5sp"
@@ -65,9 +67,9 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text="@{card.cardName}"
-                        android:theme="@style/AppTheme"
                         android:textAlignment="center"
-                        android:textColor="#000000" />
+                        android:textColor="#000000"
+                        android:theme="@style/AppTheme" />
                 </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>

@@ -33,6 +33,7 @@ class HomePageItemAdapter(
                 false
             )
         )
+
         return view
     }
 

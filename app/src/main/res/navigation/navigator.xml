@@ -11,22 +11,17 @@
         tools:layout="@layout/home_page_fragment">
         <action
             android:id="@+id/action_landingPage_to_createPdfFragment"
-            app:destination="@id/createPdfFragment"
-            app:enterAnim="@android:anim/fade_in"
-            app:exitAnim="@android:anim/fade_out" />
+            app:destination="@id/createPdfFragment" />
         <action
             android:id="@+id/action_landingPage_to_viewPdfFragment"
-            app:destination="@id/viewPdfFragment"
-            app:enterAnim="@android:anim/fade_in"
-            app:exitAnim="@android:anim/fade_out" />
+            app:destination="@id/viewPdfFragment" />
         <action
             android:id="@+id/action_landingPage_to_appSetting"
             app:destination="@id/appSetting" />
         <action
             android:id="@+id/action_landingPage_to_fragmentImageToText"
             app:destination="@id/fragmentImageToText"
-            app:enterAnim="@android:anim/fade_in"
-            app:exitAnim="@android:anim/fade_out" />
+            app:popUpTo="@id/landingPage" />
     </fragment>
     <dialog
         android:id="@+id/add_files_popup"

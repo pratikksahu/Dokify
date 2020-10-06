@@ -8,9 +8,12 @@
     <string name="notEmptyFolderMessage">Hold image for more options</string>
 
     <string name="createPdf">Create PDF</string>
-    <string name="viewPdf">View PDF</string>
+    <string name="viewPdf">Recent PDF</string>
     <string name="imageToText">Image To Text</string>
     <string name="appSetting">App Settings</string>
+
+    <string name="pleaseWait">Please Wait</string>
+    <string name="sharePdfText">Share</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="compressionGuide">Highest Compression = 20\nLowest Compression = 100</string>

@@ -49,11 +49,11 @@
             android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="36sp"
+            android:layout_marginStart="32dp"
             android:layout_marginTop="4sp"
             android:text="Camera"
-            android:theme="@style/AppTheme"
             android:textColor="#000000"
+            android:theme="@style/AppTextView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/fromCamera" />
 
@@ -65,7 +65,7 @@
             android:layout_marginTop="4sp"
             android:text="Gallery"
             android:textColor="#000000"
-            android:theme="@style/AppTheme"
+            android:theme="@style/AppTextView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/fromGallery" />
 

@@ -3,9 +3,19 @@
     <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="android:fontFamily">@font/montserrat_medium</item>
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:statusBarColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="AppNameStyle" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:textSize">40sp</item>
+        <item name="android:fontFamily">@font/montserrat_medium</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
+    <style name="AppTextView" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">@font/montserrat_medium</item>
+        <item name="android:textColor">#FFFFFF</item>
     </style>
 
     <style name="ToolBarTheme" parent="Theme.AppCompat.Light.DarkActionBar" />

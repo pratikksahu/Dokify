@@ -14,7 +14,8 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="300sp"
-            android:layout_height="400sp">
+            android:layout_height="400sp"
+            android:padding="10sp">
 
             <TextView
                 android:id="@+id/textView"
@@ -23,8 +24,8 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
                 android:text="Image Compression Value"
-                android:theme="@style/AppTheme"
                 android:textColor="#000000"
+                android:theme="@style/AppTheme"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
@@ -52,9 +53,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="@string/compressionGuide"
-                android:theme="@style/AppTheme"
                 android:textColor="#FFFFFF"
                 android:textSize="9sp"
+                android:theme="@style/AppTheme"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/compressionValue" />
 
@@ -66,10 +67,10 @@
                 android:layout_marginTop="16sp"
                 android:letterSpacing="0.1"
                 android:text="App Settings"
-                android:theme="@style/AppTheme"
                 android:textColor="#000000"
                 android:textSize="20sp"
                 android:textStyle="bold"
+                android:theme="@style/AppTheme"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -77,11 +78,11 @@
                 android:id="@+id/saveButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="104dp"
-                android:layout_marginTop="184dp"
+                android:layout_marginTop="148dp"
                 android:background="@drawable/button_background"
                 android:text="Save"
                 android:theme="@style/AppTheme"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView8" />
         </androidx.constraintlayout.widget.ConstraintLayout>

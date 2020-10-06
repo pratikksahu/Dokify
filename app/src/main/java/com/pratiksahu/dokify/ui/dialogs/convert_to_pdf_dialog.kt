@@ -2,6 +2,8 @@ package com.pratiksahu.dokify.ui.dialogs
 
 import ImageUtils
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -67,7 +69,7 @@ class convert_to_pdf_dialog : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         dialog?.setCanceledOnTouchOutside(false)
-        makePDF.text = "Create PDF"
+        makePDF.text = getString(R.string.createPdf)
         fileNameTextBox.hint = timeStamp
         setupObservers()
         setupListeners()
@@ -98,39 +100,67 @@ class convert_to_pdf_dialog : DialogFragment() {
         }
 
         makePDF.setOnClickListener {
-            val notify = CoroutineScope(Main).launch {
-                makePDF.isClickable = false
-                makePDF.text = "Please Wait"
-                imagePagerViewModel.setIsConverted(false)
-                delay(15)
-            }
-            notify.invokeOnCompletion {
-
-                //Invoke create pdf file method
-                if (!fileName.isEmpty() && !fileName.isBlank()) {
-                    createFile(fileName, "", ".pdf")
-                } else {
-                    createFile(timeStamp, "PDF_", ".pdf")
+            if (makePDF.text == getString(R.string.createPdf)) {
+                val notify = CoroutineScope(Main).launch {
+                    makePDF.isClickable = false
+                    makePDF.text = getString(R.string.pleaseWait)
+                    imagePagerViewModel.setIsConverted(false)
+                    delay(15)
                 }
+                notify.invokeOnCompletion {
 
-                //Launch pdf creation method
-                val convertTask = CoroutineScope(IO).launch {
-                    if (toConvert) {
-                        ImageUtils.instant?.createPdf(tempImagesToConvert, currentPhotoPath)
-                            .let {
+                    //Invoke create pdf file method
+                    if (!fileName.isEmpty() && !fileName.isBlank()) {
+                        createFile(fileName, "", ".pdf")
+                    } else {
+                        createFile(timeStamp, "PDF_", ".pdf")
+                    }
+
+                    //Launch pdf creation method
+                    val convertTask = CoroutineScope(IO).launch {
+                        if (toConvert) {
+                            ImageUtils.instant?.createPdf(tempImagesToConvert, currentPhotoPath)
+                                .let {
+                                    pdfCreated(it!!)
+                                }
+                        } else {
+                            ImageUtils.instant?.createPdf(imagesToConvert, currentPhotoPath).let {
                                 pdfCreated(it!!)
                             }
-                    } else {
-                        ImageUtils.instant?.createPdf(imagesToConvert, currentPhotoPath).let {
-                            pdfCreated(it!!)
+                        }
+                    }
+                    convertTask.invokeOnCompletion {
+                        CoroutineScope(Main).launch {
+                            makePDF.text = getString(R.string.sharePdfText)
+                            makePDF.isClickable = true
+                            colorOrNot.isChecked = false
+                            colorOrNot.isClickable = false
+                            fileNameTextBox.isClickable = false
+//                            navController.popBackStack()
                         }
                     }
                 }
-                convertTask.invokeOnCompletion {
-                    CoroutineScope(Main).launch {
-                        makePDF.isClickable = false
-                        navController.popBackStack()
-                    }
+            }
+            if (makePDF.text == getString(R.string.sharePdfText)) {
+                try {
+                    val path = currentPhotoPath
+                    val file = File(path)
+                    val uri = FileProvider.getUriForFile(
+                        requireContext(),
+                        "com.pratiksahu.android.fileprovider",
+                        file
+                    )
+                    val intentUrl = Intent(Intent.ACTION_SEND_MULTIPLE)
+                    intentUrl.type = "application/pdf"
+                    intentUrl.putParcelableArrayListExtra(Intent.EXTRA_STREAM, arrayListOf(uri))
+                    intentUrl.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    requireContext().startActivity(intentUrl)
+                } catch (e: ActivityNotFoundException) {
+                    Toast.makeText(
+                        requireActivity(),
+                        "Unknown Error Occured",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }
@@ -152,7 +182,7 @@ class convert_to_pdf_dialog : DialogFragment() {
         }
     }
 
-    //Utility function
+    //Utility function for pdf
 
     fun createFile(fileName: String, prefix: String, suffix: String) {
 
