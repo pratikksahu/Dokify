@@ -1,16 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?><!--<layer-list xmlns:android="http://schemas.android.com/apk/res/android">-->
-<!--    <item>-->
-<!--        <shape android:shape="rectangle">-->
-<!--            <corners-->
-<!--                android:bottomLeftRadius="40dp"-->
-<!--                android:bottomRightRadius="40dp" />-->
-<!--            <gradient-->
-<!--                android:angle="270"-->
-<!--                android:endColor="#ECB8B8"-->
-<!--                android:startColor="#9CA0DD" />-->
-<!--        </shape>-->
-<!--    </item>-->
-<!--</layer-list>-->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="rectangle">

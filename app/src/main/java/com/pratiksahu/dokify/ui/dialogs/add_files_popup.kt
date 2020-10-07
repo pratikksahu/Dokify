@@ -32,6 +32,7 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
@@ -341,14 +342,18 @@ class add_files_popup : DialogFragment() {
         val name = prefix + fileName + suffix
         val path = getString(R.string.imageOutputPath)
         File(path).mkdir()
-        File("${path}${name}").apply {
-            currentPhotoPath = absolutePath
-        }.createNewFile().also {
-            photoURI = FileProvider.getUriForFile(
-                requireContext(),
-                "com.pratiksahu.android.fileprovider",
-                File(currentPhotoPath)
-            )
+        try {
+            File("${path}${name}").apply {
+                currentPhotoPath = absolutePath
+            }.createNewFile().also {
+                photoURI = FileProvider.getUriForFile(
+                    requireContext(),
+                    "com.pratiksahu.android.fileprovider",
+                    File(currentPhotoPath)
+                )
+            }
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
         }
     }
 

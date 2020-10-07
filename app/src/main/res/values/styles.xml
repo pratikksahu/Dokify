@@ -18,6 +18,10 @@
         <item name="android:textColor">#FFFFFF</item>
     </style>
 
-    <style name="ToolBarTheme" parent="Theme.AppCompat.Light.DarkActionBar" />
+    <style name="logoBackground" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:background">@drawable/logo_background</item>
+        <item name="android:src">@drawable/logo_512_512</item>
+    </style>
+
 
 </resources>
