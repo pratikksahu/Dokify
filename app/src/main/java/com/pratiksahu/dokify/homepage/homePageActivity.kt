@@ -4,6 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.LinearInterpolator
+import android.view.animation.RotateAnimation
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -36,8 +39,31 @@ class HomePageActivity : Fragment(R.layout.home_page_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        logoAnimation()
+        helpButtonListener()
         initAdapter()
+    }
+
+    fun helpButtonListener() {
+        helpButton.setOnClickListener {
+            navController.navigate(R.id.action_landingPage_to_about)
+        }
+    }
+
+    fun logoAnimation() {
+        val rotateAnimation = RotateAnimation(
+            0F, 360F,
+            Animation.RELATIVE_TO_SELF, 0.5F,
+            Animation.RELATIVE_TO_SELF, 0.5F
+        )
+
+        rotateAnimation.interpolator = LinearInterpolator()
+        rotateAnimation.duration = 2000
+        rotateAnimation.repeatCount = 2
+        logoView.setOnLongClickListener {
+            logoView.startAnimation(rotateAnimation)
+            true
+        }
     }
 
 

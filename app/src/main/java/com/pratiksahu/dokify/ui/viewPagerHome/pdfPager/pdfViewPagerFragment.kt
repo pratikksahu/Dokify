@@ -10,6 +10,9 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.LinearInterpolator
+import android.view.animation.RotateAnimation
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.FileProvider
@@ -78,6 +81,8 @@ class PdfViewPagerFragment : Fragment(R.layout.view_pdf_fragment) {
         progressCircle.centerRadius = 30f
         progressCircle.start()
 
+        logoAnimation()
+        helpButtonListener()
         hideActionsTabView()
         setupSelectAllCheckBoxListener()
         setupShareMultiple()
@@ -86,6 +91,28 @@ class PdfViewPagerFragment : Fragment(R.layout.view_pdf_fragment) {
         setupDeleteDialogResponseListener()
         setupObservers()
         initAdapter()
+    }
+
+    fun logoAnimation() {
+        val rotateAnimation = RotateAnimation(
+            0F, 360F,
+            Animation.RELATIVE_TO_SELF, 0.5F,
+            Animation.RELATIVE_TO_SELF, 0.5F
+        )
+
+        rotateAnimation.interpolator = LinearInterpolator()
+        rotateAnimation.duration = 2000
+        rotateAnimation.repeatCount = 2
+        logoView.setOnLongClickListener {
+            logoView.startAnimation(rotateAnimation)
+            true
+        }
+    }
+
+    fun helpButtonListener() {
+        helpButton.setOnClickListener {
+            navController.navigate(R.id.action_viewPdfFragment_to_about)
+        }
     }
 
     fun setupObservers() {

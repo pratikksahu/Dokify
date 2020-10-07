@@ -37,7 +37,7 @@
                 android:layout_marginBottom="8sp">
 
                 <ImageView
-                    android:id="@+id/helpButton2"
+                    android:id="@+id/helpButton"
                     android:layout_width="40sp"
                     android:layout_height="40sp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -49,7 +49,7 @@
                     app:srcCompat="@drawable/ic_button_info" />
 
                 <ImageView
-                    android:id="@+id/imageView2"
+                    android:id="@+id/logoView"
                     android:layout_width="70sp"
                     android:layout_height="70sp"
                     android:layout_marginStart="8dp"
@@ -67,7 +67,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.036"
-                    app:layout_constraintStart_toEndOf="@+id/imageView2"
+                    app:layout_constraintStart_toEndOf="@+id/logoView"
                     app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -118,6 +118,40 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHeight_percent="0.40"
                     app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5sp">
+
+                <Button
+                    android:id="@+id/clearText"
+                    style="@style/AppTheme"
+                    android:layout_width="110sp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="40sp"
+                    android:background="@drawable/button_background"
+                    android:paddingStart="5sp"
+                    android:paddingEnd="5sp"
+                    android:text="Clear Text"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Button
+                    android:id="@+id/shareText"
+                    style="@style/AppTheme"
+                    android:layout_width="110sp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="100sp"
+                    android:background="@drawable/button_background"
+                    android:paddingStart="5sp"
+                    android:paddingEnd="5sp"
+                    android:text="@string/sharePdfText"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/clearText"
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 

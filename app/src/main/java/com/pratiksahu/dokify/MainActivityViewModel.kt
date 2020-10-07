@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 
 class MainActivityViewModel @ViewModelInject constructor() : ViewModel() {
 
+    //Also used for image to text screen
+
     private val _addFilesShow = MutableLiveData<Boolean>()
     var addFilesShow: LiveData<Boolean> = _addFilesShow
 
@@ -18,6 +20,17 @@ class MainActivityViewModel @ViewModelInject constructor() : ViewModel() {
 
     private val _imageToText = MutableLiveData<Boolean>(false)
     var imageToText: LiveData<Boolean> = _imageToText
+
+    private val _convertedText = MutableLiveData<String>("")
+    var convertedText: LiveData<String> = _convertedText
+
+    fun setConvertedText(value: String = "") {
+        if (value.isBlank() || value.isEmpty())
+            _convertedText.value = ""
+        else
+            _convertedText.value += "\n" + value
+    }
+
 
     fun setAddFilesButtonShow(value: Boolean) {
         _addFilesShow.value = value

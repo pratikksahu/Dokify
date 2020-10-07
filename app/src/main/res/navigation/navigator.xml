@@ -22,6 +22,9 @@
             android:id="@+id/action_landingPage_to_fragmentImageToText"
             app:destination="@id/fragmentImageToText"
             app:popUpTo="@id/landingPage" />
+        <action
+            android:id="@+id/action_landingPage_to_about"
+            app:destination="@id/about" />
     </fragment>
     <dialog
         android:id="@+id/add_files_popup"
@@ -69,6 +72,9 @@
         <action
             android:id="@+id/action_viewPdfFragment_to_delete_confirmation_dialog"
             app:destination="@id/delete_confirmation_dialog" />
+        <action
+            android:id="@+id/action_viewPdfFragment_to_about"
+            app:destination="@id/about" />
     </fragment>
     <dialog
         android:id="@+id/appSetting"
@@ -83,5 +89,13 @@
         <action
             android:id="@+id/action_fragmentImageToText_to_add_files_popup"
             app:destination="@id/add_files_popup" />
+        <action
+            android:id="@+id/action_fragmentImageToText_to_about"
+            app:destination="@id/about" />
     </fragment>
+    <dialog
+        android:id="@+id/about"
+        android:name="com.pratiksahu.dokify.ui.dialogs.About"
+        android:label="fragment_about"
+        tools:layout="@layout/fragment_about" />
 </navigation>

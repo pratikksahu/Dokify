@@ -30,10 +30,18 @@ class MainActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             createPdfDirectroy()
             createTempDirectory()
+            createTextDirectory()
         }
         pdfViewPagerFragmentViewModel.pdfPath = getString(R.string.pdfOutputPath)
         imagePagerViewModel.tempPath = getString(R.string.tempOutputPath)
         imagePagerViewModel.picturePath = getString(R.string.imageOutputPath)
+    }
+
+    fun createTextDirectory() {
+        val path = getString(R.string.textOutputPath)
+        val directory = File(path)
+        if (!directory.exists())
+            directory.mkdir()
     }
 
     fun createTempDirectory() {

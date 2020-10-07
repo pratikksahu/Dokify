@@ -10,6 +10,9 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.view.animation.Animation
+import android.view.animation.LinearInterpolator
+import android.view.animation.RotateAnimation
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.FileProvider
@@ -26,6 +29,9 @@ import com.pratiksahu.dokify.model.DocInfo
 import com.pratiksahu.dokify.ui.recyclerViewAdapter.ImportedImagesAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.create_pdf_fragment.*
+import kotlinx.android.synthetic.main.create_pdf_fragment.guideText
+import kotlinx.android.synthetic.main.create_pdf_fragment.logoView
+import kotlinx.android.synthetic.main.view_pdf_fragment.*
 import kotlinx.android.synthetic.main.view_pdf_fragment.actionsTab
 import kotlinx.android.synthetic.main.view_pdf_fragment.cancelSelectionButton
 import kotlinx.android.synthetic.main.view_pdf_fragment.deleteFileButton
@@ -140,6 +146,7 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
         progressCircle.centerRadius = 30f
         progressCircle.start()
 
+        logoAnimation()
         AddFilesButtonSetup()
         hideActionsTabView()
         rearrangeButton.visibility = GONE
@@ -156,6 +163,22 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
         setupDeleteImageButtonListener()
         setupDeleteDialogListener()
         initDocsAdapter()
+    }
+
+    fun logoAnimation() {
+        val rotateAnimation = RotateAnimation(
+            0F, 360F,
+            Animation.RELATIVE_TO_SELF, 0.5F,
+            Animation.RELATIVE_TO_SELF, 0.5F
+        )
+
+        rotateAnimation.interpolator = LinearInterpolator()
+        rotateAnimation.duration = 2000
+        rotateAnimation.repeatCount = 2
+        logoView.setOnLongClickListener {
+            logoView.startAnimation(rotateAnimation)
+            true
+        }
     }
 
     fun createTempDirectory() {

@@ -90,61 +90,65 @@ class add_files_popup : DialogFragment() {
 
     private val galleryActivityRegisterMulti =
         registerForActivityResult(ActivityResultContracts.GetMultipleContents()) {
-            if (it.size != 0)
-                it?.also {
-                    mainActivityViewModel.setAddFilesButtonShow(false)
-                    Log.d(TAG_IMPORT_GALLERY, "Number of items : ${it.size}")
-                    CoroutineScope(IO).launch {
-                        CoroutineScope(Main).launch {
-                            Log.d(TAG_IMPORT_GALLERY, "Loading Image : true")
-                            imagePagerViewModel.isLoading(true)
-                        }
-                        for (i in it.indices) {
-                            var bitMap: Bitmap
-                            val timeStamp =
-                                i.toString() + "_" + SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-                            createFile(timeStamp, "JPEG", ".jpeg")
-                            if (Build.VERSION.SDK_INT >= 29) {
-                                bitMap = ImageDecoder.decodeBitmap(
-                                    ImageDecoder.createSource(
-                                        requireContext().contentResolver,
-                                        it[i]
-                                    )
-                                )
-                            } else {
-                                // Use older version
-                                bitMap = MediaStore.Images.Media.getBitmap(
+            if (it.size != 0) {
+                mainActivityViewModel.setAddFilesButtonShow(false)
+                Log.d(TAG_IMPORT_GALLERY, "Number of items : ${it.size}")
+                CoroutineScope(IO).launch {
+                    CoroutineScope(Main).launch {
+                        Log.d(TAG_IMPORT_GALLERY, "Loading Image : true")
+                        imagePagerViewModel.isLoading(true)
+                    }
+                    for (i in it.indices) {
+                        var bitMap: Bitmap
+                        val timeStamp =
+                            i.toString() + "_" + SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+                        createFile(timeStamp, "JPEG", ".jpeg")
+                        if (Build.VERSION.SDK_INT >= 29) {
+                            bitMap = ImageDecoder.decodeBitmap(
+                                ImageDecoder.createSource(
                                     requireContext().contentResolver,
                                     it[i]
                                 )
-                            }
-
-                            val opstream = FileOutputStream(currentPhotoPath)
-
-                            //creating byteoutputstream
-                            val btopstream = ByteArrayOutputStream()
-                            Log.d("COMPRESSION_VALUE", compression.toString())
-                            bitMap.compress(Bitmap.CompressFormat.JPEG, compression, btopstream)
-                            opstream.write(btopstream.toByteArray())
-                            opstream.flush()
-                            opstream.close()
+                            )
+                        } else {
+                            // Use older version
+                            bitMap = MediaStore.Images.Media.getBitmap(
+                                requireContext().contentResolver,
+                                it[i]
+                            )
                         }
-                        imagePagerViewModel.initImages()
-                        CoroutineScope(Main).launch {
-                            Log.d(TAG_IMPORT_GALLERY, "Loading Image : false")
-                            imagePagerViewModel.isLoading(false)
-                        }
+
+                        val opstream = FileOutputStream(currentPhotoPath)
+
+                        //creating byteoutputstream
+                        val btopstream = ByteArrayOutputStream()
+                        Log.d("COMPRESSION_VALUE", compression.toString())
+                        bitMap.compress(Bitmap.CompressFormat.JPEG, compression, btopstream)
+                        opstream.write(btopstream.toByteArray())
+                        opstream.flush()
+                        opstream.close()
                     }
-                    mainActivityViewModel.setAddFilesButtonShow(true)
+                    imagePagerViewModel.initImages()
+                    CoroutineScope(Main).launch {
+                        Log.d(TAG_IMPORT_GALLERY, "Loading Image : false")
+                        imagePagerViewModel.isLoading(false)
+                    }
+                }
+                mainActivityViewModel.setAddFilesButtonShow(true)
+                fromGallery.isClickable = true
+                fromCamera.isClickable = true
+                navController.popBackStack()
+            } else {
+                CoroutineScope(Main).launch {
                     fromGallery.isClickable = true
                     fromCamera.isClickable = true
-                    navController.popBackStack()
                 }
+            }
         }
     private val galleryActivityRegisterSingle =
         registerForActivityResult(ActivityResultContracts.GetContent()) {
 
-            it?.also {
+            if (it != null) {
                 CoroutineScope(IO).launch {
 
                     val bitMap: Bitmap
@@ -178,13 +182,17 @@ class add_files_popup : DialogFragment() {
 
                 }.invokeOnCompletion {
                     CoroutineScope(Main).launch {
-
                         mainActivityViewModel.setImageToTextPhotoPath(currentPhotoPath)
                         mainActivityViewModel.setImageToText(false)
                         fromGallery.isClickable = true
                         fromCamera.isClickable = true
                         navController.popBackStack()
                     }
+                }
+            } else {
+                CoroutineScope(Main).launch {
+                    fromGallery.isClickable = true
+                    fromCamera.isClickable = true
                 }
             }
         }
