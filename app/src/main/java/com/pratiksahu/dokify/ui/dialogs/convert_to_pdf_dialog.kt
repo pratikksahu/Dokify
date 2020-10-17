@@ -6,6 +6,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,6 +36,9 @@ import kotlin.collections.ArrayList
 @SuppressLint("SimpleDateFormat")
 @AndroidEntryPoint
 class convert_to_pdf_dialog : DialogFragment() {
+
+    private val TEMP_TAG = "TEMP_IMAGES"
+    private val ORIGINAL_TAG = "ORIGINAL_TAG"
 
     @Inject
     lateinit var imagePagerViewModel: ImagePagerViewModel
@@ -119,11 +123,13 @@ class convert_to_pdf_dialog : DialogFragment() {
                     //Launch pdf creation method
                     val convertTask = CoroutineScope(IO).launch {
                         if (toConvert) {
+                            Log.d(TEMP_TAG, tempImagesToConvert.toString())
                             ImageUtils.instant?.createPdf(tempImagesToConvert, currentPhotoPath)
                                 .let {
                                     pdfCreated(it!!)
                                 }
                         } else {
+                            Log.d(ORIGINAL_TAG, imagesToConvert.toString())
                             ImageUtils.instant?.createPdf(imagesToConvert, currentPhotoPath).let {
                                 pdfCreated(it!!)
                             }

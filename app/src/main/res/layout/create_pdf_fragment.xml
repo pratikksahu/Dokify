@@ -22,7 +22,11 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/dashBoard"
@@ -120,25 +124,26 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.515" />
 
-                <ImageView
-                    android:id="@+id/pdfDialog"
-                    android:layout_width="40sp"
-                    android:layout_height="40sp"
-                    android:layout_marginStart="40sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/deleteFileButton"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_button_pdf" />
+                <!--                <ImageView-->
+                <!--                    android:id="@+id/deleteFileButton"-->
+                <!--                    android:layout_width="40sp"-->
+                <!--                    android:layout_height="40sp"-->
+                <!--                    android:layout_marginStart="40sp"-->
+                <!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+                <!--                    app:layout_constraintStart_toEndOf="@+id/selectAllCheckBox"-->
+                <!--                    app:layout_constraintTop_toTopOf="parent"-->
+                <!--                    app:srcCompat="@drawable/ic_button_delete" />-->
 
-                <ImageView
-                    android:id="@+id/deleteFileButton"
-                    android:layout_width="40sp"
-                    android:layout_height="40sp"
-                    android:layout_marginStart="40sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/selectAllCheckBox"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_button_delete" />
+                <!--                <ImageView-->
+                <!--                    android:id="@+id/pdfDialog"-->
+                <!--                    android:layout_width="40sp"-->
+                <!--                    android:layout_height="40sp"-->
+                <!--                    android:layout_marginStart="32dp"-->
+                <!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+                <!--                    app:layout_constraintStart_toEndOf="@+id/selectAllCheckBox"-->
+                <!--                    app:layout_constraintTop_toTopOf="parent"-->
+                <!--                    app:layout_constraintVertical_bias="0.48"-->
+                <!--                    app:srcCompat="@drawable/ic_button_pdf" />-->
 
                 <ImageView
                     android:id="@+id/cancelSelectionButton"
@@ -146,8 +151,9 @@
                     android:layout_height="40sp"
                     android:layout_marginStart="120sp"
                     android:hapticFeedbackEnabled="true"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/deleteFileButton"
+                    app:layout_constraintStart_toEndOf="@+id/selectAllCheckBox"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_button_close" />
 
@@ -158,8 +164,8 @@
                     android:layout_marginStart="50sp"
                     android:background="@drawable/popup_background"
                     android:text="Rearrange"
-                    android:theme="@style/AppTheme"
                     android:textColor="#000000"
+                    android:theme="@style/AppTheme"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -169,54 +175,117 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/importedocks"
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:alwaysDrawnWithCache="true"
-                    android:clipToPadding="false"
-                    android:padding="@dimen/default_gap"
-                    android:overScrollMode="never"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:listitem="@layout/imported_docks_item">
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
 
-                </androidx.recyclerview.widget.RecyclerView>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/importedocks"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:alwaysDrawnWithCache="true"
+                        android:clipToPadding="false"
+                        android:overScrollMode="never"
+                        android:padding="@dimen/default_gap"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:listitem="@layout/imported_docks_item">
 
-                <ProgressBar
-                    android:id="@+id/loadingData"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="120sp"
+                    </androidx.recyclerview.widget.RecyclerView>
+
+                    <TextView
+                        android:id="@+id/notifyText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:text="@string/emptyFolderMessage"
+                        android:theme="@style/AppTextView"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="@+id/importedocks"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.47000003" />
+
+                    <ProgressBar
+                        android:id="@+id/loadingData"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="120sp"
+                        android:layout_height="wrap_content"
+                        android:animationResolution="@android:integer/config_mediumAnimTime"
+                        android:indeterminate="true"
+                        android:indeterminateBehavior="repeat"
+                        android:indeterminateDuration="3"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="@+id/importedocks"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/actionsBottomTab"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:animationResolution="@android:integer/config_mediumAnimTime"
-                    android:indeterminate="true"
-                    android:indeterminateBehavior="repeat"
-                    android:indeterminateDuration="3"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="@+id/importedocks"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:layout_marginStart="5sp"
+                    android:layout_marginTop="5sp"
+                    android:layout_marginEnd="5sp"
+                    android:layout_marginBottom="10sp">
 
-                <TextView
-                    android:id="@+id/notifyText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:text="@string/emptyFolderMessage"
-                    android:theme="@style/AppTextView"
-                    app:layout_constraintBottom_toBottomOf="@+id/importedocks"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.53" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    <TextView
+                        android:id="@+id/textView11"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="40sp"
+                        android:gravity="center_vertical"
+                        android:text="Generate PDF"
+                        android:theme="@style/AppTextView"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/textView10"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:text="Clear"
+                        android:theme="@style/AppTextView"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/deleteFileButton"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/pdfDialog"
+                        android:layout_width="40sp"
+                        android:layout_height="40sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/textView11"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_button_pdf" />
+
+                    <ImageView
+                        android:id="@+id/deleteFileButton"
+                        android:layout_width="40sp"
+                        android:layout_height="40sp"
+                        android:layout_marginStart="40sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_button_delete" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
 
 
         </LinearLayout>

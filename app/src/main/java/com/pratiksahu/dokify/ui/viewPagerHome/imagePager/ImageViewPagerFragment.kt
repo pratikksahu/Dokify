@@ -29,7 +29,7 @@ import com.pratiksahu.dokify.model.DocInfo
 import com.pratiksahu.dokify.ui.recyclerViewAdapter.ImportedImagesAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.create_pdf_fragment.*
-import kotlinx.android.synthetic.main.create_pdf_fragment.guideText
+//import kotlinx.android.synthetic.main.create_pdf_fragment.guideText
 import kotlinx.android.synthetic.main.create_pdf_fragment.logoView
 import kotlinx.android.synthetic.main.view_pdf_fragment.*
 import kotlinx.android.synthetic.main.view_pdf_fragment.actionsTab
@@ -247,11 +247,11 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
                 //If Empty show empty message
                 notifyText.text = getString(R.string.emptyFolderMessage)
                 notifyText.visibility = VISIBLE
-                guideText.visibility = GONE
+//                guideText.visibility = GONE
                 importedocks.visibility = GONE
             } else {
-                guideText.text = getString(R.string.notEmptyFolderMessage)
-                guideText.visibility = VISIBLE
+//                guideText.text = getString(R.string.notEmptyFolderMessage)
+//                guideText.visibility = VISIBLE
                 notifyText.visibility = GONE
                 //Not using moreOptions
                 moreOptions.visibility = GONE
@@ -365,14 +365,14 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
                     importedImagesAdapter?.setSelectedItems(selectedItems)
                 }
             ) { _, _, _ ->
-                if (flagForSelection == 0 && flagForRearrange == 0) {
-                    guideText.visibility = GONE
-                    helper.attachToRecyclerView(null)
-                    mainActivityViewModel.setAddFilesButtonShow(false)
-                    showActionsTabView()
-                    flagForSelection = 1
-                    importedImagesAdapter?.setIsLongClicked(true)
-                }
+//                if (flagForSelection == 0 && flagForRearrange == 0) {
+////                    guideText.visibility = GONE
+//                    helper.attachToRecyclerView(null)
+//                    mainActivityViewModel.setAddFilesButtonShow(false)
+//                    showActionsTabView()
+//                    flagForSelection = 1
+//                    importedImagesAdapter?.setIsLongClicked(true)
+//                }
             }
             importedocks.apply {
                 layoutManager = GridLayoutManager(requireContext(), 2)
@@ -400,6 +400,7 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
 
     fun pdfButtonListener() {
         pdfDialog.setOnClickListener {
+            selectAllCheckBox.isChecked = true
             if (selectedItemsImage.size > 0) {
                 pdfDialog.isClickable = false
                 imagePagerViewModel.setImagesToConvert(selectedItemsImage)
@@ -469,6 +470,7 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
                 rearrangeButton.text = "DONE"
                 importedocks.layoutManager = LinearLayoutManager(requireContext())
                 helper.attachToRecyclerView(importedocks)
+                actionsBottomTab.visibility = GONE
                 //Not using moreOptions
                 moreOptions.visibility = GONE
             } else if (flagForRearrange == 1) {
@@ -477,6 +479,7 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
                 rearrangeButton.text = "REARRANGE"
                 importedocks.layoutManager = GridLayoutManager(requireContext(), 2)
                 helper.attachToRecyclerView(null)
+                actionsBottomTab.visibility = VISIBLE
                 //Not using moreOptions
                 moreOptions.visibility = GONE
             }
@@ -485,8 +488,9 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
 
     var deleteFlag = 0
 
-    fun setupDeleteImageButtonListener() {
+    private fun setupDeleteImageButtonListener() {
         deleteFileButton.setOnClickListener {
+            selectAllCheckBox.isChecked = true
             if (selectedItemsImage.size > 0) {
                 mainActivityViewModel.setAddFilesButtonShow(false)
                 deleteFlag = 1
@@ -494,7 +498,6 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
                 navController.navigate(R.id.action_createPdfFragment_to_delete_confirmation_dialog)
             } else
                 ToastMessage("No items to delete")
-
         }
     }
 
@@ -536,7 +539,7 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
                         }
                 }
             }
-            guideText.visibility = VISIBLE
+//            guideText.visibility = VISIBLE
             helper.attachToRecyclerView(null)
             flagForSelection = 0
             importedImagesAdapter?.setIsLongClicked(false)
@@ -579,8 +582,8 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
     fun hideActionsTabView() {
         //Hide buttons
         selectAllCheckBox.visibility = GONE
-        deleteFileButton.visibility = GONE
-        pdfDialog.visibility = GONE
+//        deleteFileButton.visibility = GONE
+//        pdfDialog.visibility = GONE
         cancelSelectionButton.visibility = GONE
 
         //Show guide text
@@ -593,8 +596,8 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
     fun showActionsTabView() {
         //Hide buttons
         selectAllCheckBox.visibility = VISIBLE
-        deleteFileButton.visibility = VISIBLE
-        pdfDialog.visibility = VISIBLE
+//        deleteFileButton.visibility = VISIBLE
+//        pdfDialog.visibility = VISIBLE
         cancelSelectionButton.visibility = GONE
 
         //Hide guide text and Rearrange button
