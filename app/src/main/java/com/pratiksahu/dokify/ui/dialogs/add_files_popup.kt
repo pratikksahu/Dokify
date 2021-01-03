@@ -3,6 +3,7 @@ package com.pratiksahu.dokify.ui.dialogs
 import ImageUtils
 import android.Manifest.permission
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
@@ -10,6 +11,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -37,6 +39,7 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+
 
 @RequiresApi(Build.VERSION_CODES.P)
 @AndroidEntryPoint
@@ -99,10 +102,29 @@ class add_files_popup : DialogFragment() {
                         imagePagerViewModel.isLoading(true)
                     }
                     for (i in it.indices) {
+
+                        var name = ""
+                        if (it[i].scheme.equals("content")) {
+                            val cursor: Cursor? = requireContext().contentResolver.query(
+                                it[i],
+                                null,
+                                null,
+                                null,
+                                null
+                            )
+                            cursor.use { cursor ->
+                                if (cursor != null && cursor.moveToFirst()) {
+                                    name =
+                                        cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                                }
+                            }
+                        }
+                        name = name.split('.')[0]
                         var bitMap: Bitmap
-                        val timeStamp =
-                            i.toString() + "_" + SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-                        createFile(timeStamp, "JPEG", ".jpeg")
+//                        val timeStamp =
+//                            i.toString() + "_" + SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+//                        createFile(timeStamp, "JPEG", ".jpeg")
+                        createFile(name, "", ".jpeg")
                         if (Build.VERSION.SDK_INT >= 29) {
                             bitMap = ImageDecoder.decodeBitmap(
                                 ImageDecoder.createSource(
@@ -122,7 +144,6 @@ class add_files_popup : DialogFragment() {
 
                         //creating byteoutputstream
                         val btopstream = ByteArrayOutputStream()
-                        Log.d("COMPRESSION_VALUE", compression.toString())
                         bitMap.compress(Bitmap.CompressFormat.JPEG, compression, btopstream)
                         opstream.write(btopstream.toByteArray())
                         opstream.flush()
@@ -174,7 +195,6 @@ class add_files_popup : DialogFragment() {
 
                     //creating byteoutputstream
                     val btopstream = ByteArrayOutputStream()
-                    Log.d("COMPRESSION_VALUE", compression.toString())
                     bitMap.compress(Bitmap.CompressFormat.JPEG, compression, btopstream)
                     opstream.write(btopstream.toByteArray())
                     opstream.flush()

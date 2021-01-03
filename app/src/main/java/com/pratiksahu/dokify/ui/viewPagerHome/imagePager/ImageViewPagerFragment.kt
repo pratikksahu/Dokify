@@ -31,7 +31,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.create_pdf_fragment.*
 //import kotlinx.android.synthetic.main.create_pdf_fragment.guideText
 import kotlinx.android.synthetic.main.create_pdf_fragment.logoView
-import kotlinx.android.synthetic.main.view_pdf_fragment.*
 import kotlinx.android.synthetic.main.view_pdf_fragment.actionsTab
 import kotlinx.android.synthetic.main.view_pdf_fragment.cancelSelectionButton
 import kotlinx.android.synthetic.main.view_pdf_fragment.deleteFileButton
@@ -118,7 +117,7 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         activity?.onBackPressedDispatcher?.addCallback(
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
@@ -261,7 +260,7 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
 
         })
         imagePagerViewModel.loading.observe(viewLifecycleOwner, Observer { isLoading ->
-            Log.d(TAG_IMAGE_LIST, "LOADING IMAGES STATUS :" + isLoading.toString())
+            Log.d(TAG_IMAGE_LIST, "LOADING IMAGES STATUS :$isLoading")
             if (isLoading) {
                 actionsTab.visibility = GONE
                 importedocks.visibility = GONE
@@ -422,11 +421,9 @@ class ImageViewPagerFragment : Fragment(R.layout.create_pdf_fragment) {
                     if (!directory.exists())
                         directory.mkdir()
                     else {
-                        val del = directory.listFiles()
-                        if (del != null)
-                            del.forEach {
-                                File(it.path).delete()
-                            }
+                        directory.listFiles()?.forEach {
+                            File(it.path).delete()
+                        }
                     }
                     directory.mkdir()
                 }
