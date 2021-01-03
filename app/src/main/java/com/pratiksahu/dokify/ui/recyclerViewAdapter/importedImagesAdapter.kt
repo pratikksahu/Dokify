@@ -66,7 +66,7 @@ class ImportedImagesAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(position)
         holder.itemView.importedImage.setOnClickListener(holder)
-        holder.itemView.importedImage.setOnLongClickListener(holder)
+//        holder.itemView.importedImage.setOnLongClickListener(holder)
         holder.itemView.singleItemCheckBox.setOnCheckedChangeListener(null)
         holder.itemView.singleItemCheckBox.visibility = if (isLongClicked) VISIBLE else GONE
         holder.itemView.singleItemCheckBox.isChecked = selectedItems.contains(position)

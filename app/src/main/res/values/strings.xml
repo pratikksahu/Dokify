@@ -22,5 +22,6 @@
     <string name="github">Github</string>
     <string name="repository"><a href="https://github.com/pratikksahu/Dokify">Repository</a></string>
     <string name="contributorA"><a href="https://instagram.com/_hemu.mickey">Icon Design @Hemant Agrawal</a></string>
+    <string name="contributorB"><a href="https://www.instagram.com/samikshabanchhor/"> @Samiksha Banchhor</a></string>
     <string name="email"><a href="mailto:pratikksahu@icloud.com">pratikksahu@icloud.com</a></string>
 </resources>

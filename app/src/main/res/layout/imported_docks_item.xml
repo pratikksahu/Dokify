@@ -65,6 +65,7 @@
                         android:text="(20)"
                         android:theme="@style/AppTheme"
                         android:textColor="#DFDCDC" />
+
                 </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>

@@ -29,6 +29,7 @@ class About : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         repository.movementMethod = LinkMovementMethod.getInstance()
         contributorA.movementMethod = LinkMovementMethod.getInstance()
+        contributorB.movementMethod = LinkMovementMethod.getInstance()
         contactEmail.movementMethod = LinkMovementMethod.getInstance()
 
         val manager = requireActivity().packageManager
