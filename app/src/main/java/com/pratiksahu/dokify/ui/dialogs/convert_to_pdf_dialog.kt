@@ -114,7 +114,7 @@ class convert_to_pdf_dialog : DialogFragment() {
                 notify.invokeOnCompletion {
 
                     //Invoke create pdf file method
-                    if (!fileName.isEmpty() && !fileName.isBlank()) {
+                    if (fileName.isNotEmpty() && fileName.isNotBlank()) {
                         createFile(fileName, "", ".pdf")
                     } else {
                         createFile(timeStamp, "PDF_", ".pdf")

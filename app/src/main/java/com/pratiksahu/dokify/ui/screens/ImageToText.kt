@@ -52,7 +52,7 @@ class ImageToText : Fragment(R.layout.fragment_image_to_text) {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentImageToTextBinding.inflate(inflater, container, false)
         return binding.root
     }
