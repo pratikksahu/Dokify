@@ -18,6 +18,7 @@ import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
+import kotlin.math.roundToInt
 
 
 class ImageUtils {
@@ -25,8 +26,7 @@ class ImageUtils {
 
     val TAG_IMAGE_RESOLUTION = "IMAGE_RESOLUTION"
     fun createPdf(imageList: ArrayList<Uri>, filePath: String): Boolean {
-        val list = imageList
-        if (list.isEmpty())
+        if (imageList.isEmpty())
             return false
         var width: Float
         var height: Float
@@ -38,16 +38,16 @@ class ImageUtils {
         val pdfDocument =
             PdfDocument(pdfWriter)
         //Getting height and width
-        var bm = BitmapFactory.decodeFile(list[0].path)
+//        var bm = BitmapFactory.decodeFile(imageList[0].path)
+        var bm = getCompressedBitmap(imageList[0].path)
         width = bm.width.toFloat()
         height = bm.height.toFloat()
         //Creating first page outside loop to avoid first page being blank
-        val document = Document(pdfDocument, PageSize(width, height))
-        document.setMargins(2F, 2F, 2F, 2F)
-
+        val document = Document(pdfDocument, PageSize.A4, false)
+        document.setMargins(0F, 0F, 0F, 0F)
         //For first page
         try {
-            val imgIn = FileInputStream(list[0].path)
+            val imgIn = FileInputStream(imageList[0].path)
             val byteOut = ByteArrayOutputStream()
 
             val data = ByteArray(1024)
@@ -61,24 +61,25 @@ class ImageUtils {
             val imgData = ImageDataFactory.create(byteOut.toByteArray())
             byteOut.close()
             val pdfImage = Image(imgData)
+            document.setMargins(0F, 0F, 0F, 0F)
             document.add(pdfImage)
-            list.removeAt(0)
+            imageList.removeAt(0)
         } catch (e: IOException) {
             e.printStackTrace()
             return false
         }
         //For rest of page if items greater than 1
-        if (list.isNotEmpty()) {
+        if (imageList.isNotEmpty()) {
             try {
-                for (it in list.indices) {
-                    bm = BitmapFactory.decodeFile(list[it].path)
+                for (it in imageList.indices) {
+//                    bm = BitmapFactory.decodeFile(imageList[it].path)
+                    bm = getCompressedBitmap(imageList[it].path)
                     width = bm.width.toFloat()
                     height = bm.height.toFloat()
                     val rectangleImage = Rectangle(width, height)
                     document.add(AreaBreak(PageSize(rectangleImage)))
-                    document.setMargins(2F, 2F, 2F, 2F)
-
-                    val imgIn = FileInputStream(list[it].path)
+                    document.setMargins(0F, 0F, 0F, 0F)
+                    val imgIn = FileInputStream(imageList[it].path)
                     val byteOut = ByteArrayOutputStream()
 
                     val data = ByteArray(1024)
@@ -198,8 +199,8 @@ class ImageUtils {
         val width = options.outWidth
         var inSampleSize = 1
         if (height > reqHeight || width > reqWidth) {
-            val heightRatio = Math.round(height.toFloat() / reqHeight.toFloat())
-            val widthRatio = Math.round(width.toFloat() / reqWidth.toFloat())
+            val heightRatio = (height.toFloat() / reqHeight.toFloat()).roundToInt()
+            val widthRatio = (width.toFloat() / reqWidth.toFloat()).roundToInt()
             inSampleSize = if (heightRatio < widthRatio) heightRatio else widthRatio
         }
         val totalPixels = width * height.toFloat()

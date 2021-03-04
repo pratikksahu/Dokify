@@ -47,6 +47,7 @@ class convert_to_pdf_dialog : DialogFragment() {
     lateinit var pdfViewPagerFragmentViewModel: PdfViewPagerFragmentViewModel
 
     private val navController by lazy { NavHostFragment.findNavController(this) }
+
     lateinit var binding: ConvertToPdfDialogBinding
 
     lateinit var currentPhotoPath: String
